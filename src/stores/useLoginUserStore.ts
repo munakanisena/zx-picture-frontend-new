@@ -1,65 +1,70 @@
 import { defineStore } from 'pinia'
-import { reactive, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { getLoginUserDetailUsingGet, userLogoutUsingPost } from '@/api/userController.ts'
+import router from '@/router/router.ts'
 
-interface UserRepository{
-  isLogin:boolean
-  uerInfo:API.LoginUserDetailVO
-}
+export const useLoginUserStore = defineStore(
+  'USER_INFO',
+  () => {
+    const userInfo = ref<API.UserDetailVO>({})
+    const isLogin = computed(() => !!userInfo.value && !!userInfo.value.id)
 
-//登录用户的状态管理文件
-export const useLoginUserStore = defineStore('USER_INFO', () => {
-  //注意这里需要使用 reactive 来包裹对象，否则在修改对象属性时不会触发更新
-  const userState = reactive<UserRepository>({
-    isLogin: false,
-    uerInfo: {},
-  })
-
-    // 改为登录后将数据存储浏览器中 无需每次登录获取信息
-    // 标记是否已初始化
-  // const initialized = ref(false)
-  //
-  // async function useInitUser() {
-  //   // 如果已初始化，直接返回
-  //   if (initialized.value) return
-  //
-  //   try {
-  //     const { data } = await getLoginUserDetailUsingGet()
-  //     setLoginUser(data)
-  //     initialized.value = true // 标记为已初始化
-  //   } catch (error) {
-  //     console.error('初始化用户失败:', error)
-  //     //只初始化一次
-  //     initialized.value=true
-  //   }
-  // }
-
-  /**
-   * 设置登录用户
-   * @param newLoginUser
-   */
-  function setLoginUser(newLoginUser: API.LoginUserDetailVO) {
-    if (!newLoginUser) {
-      throw new Error('用户数据不可为空');
+    /**
+     * 检查是否登录
+     */
+    function checkLogin() {
+      if (!isLogin.value) {
+        router.push({name: 'login' })
+      }
+      return
     }
-    userState.isLogin=true
-    userState.uerInfo=newLoginUser
-  }
 
-  async function logout() {
-    await userLogoutUsingPost();
-    userState.isLogin=false
-    userState.uerInfo={}
-  }
+    /**
+     * 设置登录用户 (Action)
+     * @param newLoginUser
+     */
+    function setLoginUser(newLoginUser: API.UserDetailVO) {
+      if (!newLoginUser || !newLoginUser.id) {
+        throw new Error('用户数据或用户ID不可为空')
+      }
+      userInfo.value = newLoginUser
+    }
 
-  async function refreshUser() {
-    const { data } = await getLoginUserDetailUsingGet()
-    setLoginUser(data)
-  }
+    /**
+     * 用户登出 (Action)
+     */
+    async function logout() {
+      try {
+        await userLogoutUsingPost()
+      } catch (e) {
+        console.error('登出失败', e)
+      } finally {
+        userInfo.value = {}
+      }
+    }
 
+    /**
+     * 刷新当前用户信息 (Action)
+     */
+    async function refreshUser() {
+      //没登录无需刷新
+      if (!isLogin.value) {
+        return
+      }
+      try {
+        const res = await getLoginUserDetailUsingGet()
+        if (res.data) {
+          userInfo.value = res.data
+        } else {
+          await logout()
+        }
+      } catch (e) {
+        await logout()
+      }
+    }
 
-  return { userState, setLoginUser ,logout, refreshUser }
-},
+    return { userInfo, isLogin, setLoginUser, logout, refreshUser,checkLogin }
+  },
   //存储选项
   {
     persist: {
@@ -72,4 +77,5 @@ export const useLoginUserStore = defineStore('USER_INFO', () => {
         },
       ],
     },
-})
+  },
+)

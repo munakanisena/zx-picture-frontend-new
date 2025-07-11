@@ -1,7 +1,7 @@
 <template>
-  <n-layout :has-sider="hasSider" style="min-height: 100vh; width: 100%">
+  <n-layout style="min-height: 100vh; width: 100%">
     <n-layout-header bordered style="position: fixed; z-index: 2">
-      <n-flex align="center" style="height: 50px" :size="0">
+      <n-flex align="center" style="height: 64px" :size="0">
         <!--当宽度不够时-->
         <n-button
           v-if="!hasSider"
@@ -14,23 +14,21 @@
         >
           <n-icon size="24" :component="MenuIcon" />
         </n-button>
-        <div v-else style="padding: 0 16px; width: 100px">
+        <div v-else style="padding: 0 16px; margin-left: 10px; max-width: 200px">
           <img alt="logo" src="/src/image/logo.png" />
         </div>
 
         <div style="flex: 1"></div>
 
-        <div style="margin-top: 5px; margin-right: 16px">
+        <div style="margin-right: 16px">
           <n-dropdown
-            v-if="userState.isLogin"
+            v-if="useLoginUserStore().isLogin"
             :options="userDropdownOptions"
             trigger="hover"
             :keyboard="false"
             @select="handleUserDropdownSelect"
           >
-            <n-button size="large" :focusable="false" quaternary>{{
-              userInfo?.username
-            }}</n-button>
+            <n-button size="large" :focusable="false" quaternary>{{ userInfo?.name }}</n-button>
           </n-dropdown>
           <router-link v-else :to="{ name: 'login', query: { from: route.fullPath } }">
             <n-button size="large">登录/注册</n-button>
@@ -39,26 +37,22 @@
       </n-flex>
     </n-layout-header>
 
-    <!-- 展开时按钮的位置 -->
-    <n-layout-sider
-      v-if="hasSider"
-      :show-trigger="menuShowTrigger"
-      :trigger-style="{ position: 'fixed', top: '80%', left: '214px' }"
-      :collapsed-trigger-style="{ position: 'fixed', top: '80%', left: '36px' }"
-      bordered
-      :width="240"
-      :collapsed="menuCollapsed"
-      :collapsed-width="64"
-      collapse-mode="width"
-      :native-scrollbar="false"
-      style="z-index: 1"
-      @collapse="menuSetting = true"
-      @expand="menuSetting = false"
-    >
-      <!--自定义滚轮条-->
-      <n-scrollbar
-        style="margin-top: 50px; position: fixed; top: 0"
-        :style="{ width: menuCollapsed ? '64px' : '240px' }"
+    <n-layout :has-sider="hasSider" position="absolute" style="top: 64px; bottom: 64px">
+      <!-- 展开时按钮的位置 -->
+      <n-layout-sider
+        v-if="hasSider"
+        :show-trigger="menuShowTrigger"
+        :trigger-style="{ position: 'fixed', top: '80%', left: '214px' }"
+        :collapsed-trigger-style="{ position: 'fixed', top: '80%', left: '36px' }"
+        bordered
+        :width="240"
+        :collapsed="menuCollapsed"
+        :collapsed-width="64"
+        collapse-mode="width"
+        :native-scrollbar="false"
+        style="z-index: 1"
+        @collapse="menuSetting = true"
+        @expand="menuSetting = false"
       >
         <n-menu
           :value="menuKey"
@@ -67,58 +61,60 @@
           :collapsed="menuCollapsed"
           :collapsed-width="64"
           :collapsed-icon-size="22"
-          style="margin-bottom: 64px"
         />
-      </n-scrollbar>
-    </n-layout-sider>
+      </n-layout-sider>
 
-    <n-layout-content
-      style="margin-top: 50px; margin-bottom: 64px; z-index: 0; min-height: calc(100vh - 50px)"
-    >
-      <router-view v-slot="{ Component }">
-        <keep-alive :include="[]">
-          <component :is="Component" />
-        </keep-alive>
-      </router-view>
-    </n-layout-content>
+      <n-layout-content>
+        <router-view v-slot="{ Component }">
+          <keep-alive :include="['profile']">
+            <component :is="Component" />
+          </keep-alive>
+        </router-view>
+      </n-layout-content>
+    </n-layout>
 
-    <!--手机尺寸侧边栏-->
-    <b-phone-drawer
+    <!--移动端侧边栏-->
+    <BPhoneDrawer
       v-if="!hasSider"
       v-model:show="showMenuDrawer"
-      :username="userInfo?.username"
-      :user-avatar="userInfo?.userAvatar"
+      :username="userInfo?.name"
+      :user-avatar="userInfo?.avatar"
     >
-      <n-menu :value="menuKey" :options="menuOptions" />
-    </b-phone-drawer>
+      <n-menu :value="menuKey" :options="menuOptions" style="width: 100%" />
+    </BPhoneDrawer>
+
+    <n-layout-footer position="absolute" style="height: 64px; padding: 24px" bordered>
+      Footer Footer Footer
+    </n-layout-footer>
   </n-layout>
 </template>
 <script lang="ts" setup>
+import type { Component } from 'vue'
 import { computed, h, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
-import type { Component } from 'vue'
-import { NIcon } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
+import { NIcon } from 'naive-ui'
 import {
+  CloudUploadOutline as UploadIcon,
+  GridOutline as SpaceIcon,
   HomeOutline as HomeIcon,
-  LogOutOutline as LogoutIcon,
-  PersonCircleOutline as UserIcon,
-  MenuOutline as MenuIcon,
-  TimeOutline as TimeIcon,
   LibraryOutline as BlogsIcon,
   LogoGithub as GithubIcon,
-  NewspaperOutline as AdminIcon
+  LogOutOutline as LogoutIcon,
+  MenuOutline as MenuIcon,
+  NewspaperOutline as AdminIcon,
+  PersonOutline as UserIcon,
+  SettingsOutline as SettingIcon,
+  BookmarkOutline as FavoriteIcon,
+  TimeOutline as TimeIcon,
 } from '@vicons/ionicons5'
-import {
-  FavoriteBorderFilled as FavoriteIcon,
-  SpaceDashboardRound as SpaceIcon,
-} from '@vicons/material'
 
 import router from '@/router/router.ts'
 
-import { useBreakPoints } from '@/pages/util.ts'
+import { useBreakPoints } from '@/utils/util.ts'
 import BPhoneDrawer from '@/components/BPhoneDrawer.vue'
+import { storeToRefs } from 'pinia'
 
 const bp = useBreakPoints()
 //大于等于 侧边栏存在
@@ -131,13 +127,11 @@ watch(hasSider, () => (showMenuDrawer.value = false))
 
 const route = useRoute()
 
-const userState = useLoginUserStore().userState
-//随改变 变化
-const userInfo = computed(() => userState.uerInfo)
+const userStore = useLoginUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const menuSetting = ref(false)
 
-//注意 计算属性只能读 不能写 所以需要让menuC依赖一个额外的变量
 const menuCollapsed = computed(() => {
   if (menuShowTrigger.value) {
     return menuSetting.value
@@ -186,136 +180,6 @@ const menuKey = computed(() => {
 
 //侧边栏菜单 动态
 const menuOptions = computed<MenuOption[]>(() => {
-  //todo 过于繁琐 考虑修改
-  if (!userState.isLogin){
-    return [
-      {
-        key: '/',
-        label: renderLabel('首页', '/'),
-        icon: renderIcon(HomeIcon),
-      },
-      {
-        key: '/timeline',
-        label: renderLabel('开发历程', '/timeline'),
-        icon: renderIcon(TimeIcon),
-      },
-      {
-        key: '/blogs',
-        label:()=>
-          h(
-            'a',
-            {
-              href: 'https://katomugumi.com/',
-              target: '_blank',
-              rel: '个人博客'
-            },
-            '个人博客'
-          ),
-        icon: renderIcon(BlogsIcon),
-
-      },
-      {
-        key: '/github',
-        label:()=>
-          h(
-            'a',
-            {
-              href: 'https://github.com/munakanisena/zx-picture-frontend-new',
-              target: '_blank',
-              rel: '项目仓库'
-            },
-            '项目仓库'
-          ),
-        icon: renderIcon(GithubIcon),
-      },
-      ]
-  }
-  if (userInfo.value.userRole==='admin'){
-    return [
-      {
-        key: '/',
-        label: renderLabel('首页', '/'),
-        icon: renderIcon(HomeIcon),
-      },
-      {
-        key: '/user',
-        label: '用户',
-        icon: renderIcon(UserIcon),
-        children: [
-          {
-            key: '/user-profile',
-            label: renderLabel('用户资料', '/user-profile'),
-            icon: renderIcon(UserIcon),
-          },
-          {
-            key: '/favorite',
-            label: renderLabel('用户收藏', '/favorite'),
-            icon: renderIcon(FavoriteIcon),
-          },
-          {
-            key: '/space',
-            label: renderLabel('用户空间', '/space'),
-            icon: renderIcon(SpaceIcon),
-          },
-        ],
-      },
-      {
-        key: '/admin',
-        label: '管理',
-        icon: renderIcon(AdminIcon),
-        children: [
-          {
-            key: '/admin/user-manager',
-            label: renderLabel('用户管理', '/admin/user-manager'),
-            icon: renderIcon(AdminIcon),
-          }
-        ]
-      },
-      {
-        key: 'divider-1',
-        type: 'divider',
-        props: {
-          style: {
-            marginLeft: '32px',
-          },
-        },
-      },
-      {
-        key: '/timeline',
-        label: renderLabel('开发历程', '/timeline'),
-        icon: renderIcon(TimeIcon),
-      },
-      {
-        key: '/blogs',
-        label:()=>
-          h(
-            'a',
-            {
-              href: 'https://katomugumi.com/',
-              target: '_blank',
-              rel: '个人博客'
-            },
-            '个人博客'
-          ),
-        icon: renderIcon(BlogsIcon),
-
-      },
-      {
-        key: '/github',
-        label:()=>
-          h(
-            'a',
-            {
-              href: 'https://github.com/munakanisena/zx-picture-frontend-new',
-              target: '_blank',
-              rel: '项目仓库'
-            },
-            '项目仓库'
-          ),
-        icon: renderIcon(GithubIcon),
-      },
-    ]
-  }
   return [
     {
       key: '/',
@@ -326,6 +190,7 @@ const menuOptions = computed<MenuOption[]>(() => {
       key: '/user',
       label: '用户',
       icon: renderIcon(UserIcon),
+      show: userStore.isLogin,
       children: [
         {
           key: '/user-profile',
@@ -333,25 +198,43 @@ const menuOptions = computed<MenuOption[]>(() => {
           icon: renderIcon(UserIcon),
         },
         {
+          key: '/user/picture-upload',
+          label: renderLabel('上传图片', '/user/picture-upload'),
+          icon: renderIcon(UploadIcon),
+        },
+        {
+          key: `/user-edit/${userInfo.value.id}`,
+          label: renderLabel('用户设置', `/user-edit/${userInfo.value.id}`),
+          icon: renderIcon(SettingIcon),
+        },
+        {
           key: '/favorite',
           label: renderLabel('用户收藏', '/favorite'),
           icon: renderIcon(FavoriteIcon),
         },
         {
-          key: '/space',
-          label: renderLabel('用户空间', '/space'),
+          key: '/space/person',
+          label: renderLabel('用户空间', '/space/person'),
           icon: renderIcon(SpaceIcon),
+        },
+      ],
+    },
+    {
+      key: '/admin',
+      label: '管理',
+      icon: renderIcon(AdminIcon),
+      show: userInfo?.value.role === 'admin',
+      children: [
+        {
+          key: '/admin/user-manager',
+          label: renderLabel('用户管理', '/admin/user-manager'),
+          icon: renderIcon(AdminIcon),
         },
       ],
     },
     {
       key: 'divider-1',
       type: 'divider',
-      props: {
-        style: {
-          marginLeft: '32px',
-        },
-      },
     },
     {
       key: '/timeline',
@@ -360,37 +243,35 @@ const menuOptions = computed<MenuOption[]>(() => {
     },
     {
       key: '/blogs',
-      label:()=>
+      label: () =>
         h(
-        'a',
-        {
-          href: 'https://katomugumi.com/',
-          target: '_blank',
-          rel: '个人博客'
-        },
-        '个人博客'
-      ),
+          'a',
+          {
+            href: 'https://katomegumi.site/',
+            target: '_blank',
+            rel: '个人博客',
+          },
+          '个人博客',
+        ),
       icon: renderIcon(BlogsIcon),
-
     },
     {
       key: '/github',
-      label:()=>
+      label: () =>
         h(
           'a',
           {
             href: 'https://github.com/munakanisena/zx-picture-frontend-new',
             target: '_blank',
-            rel: '项目仓库'
+            rel: '项目仓库',
           },
-          '项目仓库'
+          '项目仓库',
         ),
       icon: renderIcon(GithubIcon),
     },
   ]
 })
 
-//避免手机打开新页面 每次都展开 菜单
 watch(
   () => route.path,
   () => (showMenuDrawer.value = false),

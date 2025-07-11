@@ -92,24 +92,9 @@ export async function restPasswordUsingPost(
   })
 }
 
-/** getUserVoById GET /api/user/get */
-export async function getUserVoByIdUsingGet(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.getUserVoByIdUsingGETParams,
-  options?: { [key: string]: any }
-) {
-  return request<API.UserVO>('/api/user/get', {
-    method: 'GET',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
-  })
-}
-
 /** login POST /api/user/login */
 export async function loginUsingPost(body: API.UserLoginRequest, options?: { [key: string]: any }) {
-  return request<API.LoginUserDetailVO>('/api/user/login', {
+  return request<API.UserDetailVO>('/api/user/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -121,7 +106,7 @@ export async function loginUsingPost(body: API.UserLoginRequest, options?: { [ke
 
 /** getLoginUserDetail GET /api/user/loginDetail */
 export async function getLoginUserDetailUsingGet(options?: { [key: string]: any }) {
-  return request<API.LoginUserDetailVO>('/api/user/loginDetail', {
+  return request<API.UserDetailVO>('/api/user/loginDetail', {
     method: 'GET',
     ...(options || {}),
   })
@@ -135,12 +120,12 @@ export async function userLogoutUsingPost(options?: { [key: string]: any }) {
   })
 }
 
-/** getUserPageListAsManage POST /api/user/manager/page */
+/** getUserPageListAsManage POST /api/user/manage/page */
 export async function getUserPageListAsManageUsingPost(
   body: API.UserQueryRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.PageVOUserVO_>('/api/user/manager/page', {
+  return request<API.PageVOUserVO_>('/api/user/manage/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

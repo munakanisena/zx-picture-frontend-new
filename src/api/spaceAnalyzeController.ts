@@ -2,12 +2,12 @@
 /* eslint-disable */
 import request from '@/utils/request'
 
-/** getSpaceCategoryAnalyze POST /api/space_analyze/category */
-export async function getSpaceCategoryAnalyzeUsingPost(
+/** analyzeSpaceCategory POST /api/analyze/space/picture-categories */
+export async function analyzeSpaceCategoryUsingPost(
   body: API.SpaceCategoryAnalyzeRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.SpaceCategoryAnalyzeResponse[]>('/api/space_analyze/category', {
+  return request<API.SpaceCategoryAnalyzeResponse[]>('/api/analyze/space/picture-categories', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,12 +17,12 @@ export async function getSpaceCategoryAnalyzeUsingPost(
   })
 }
 
-/** getSpaceRankAnalyze POST /api/space_analyze/rank */
-export async function getSpaceRankAnalyzeUsingPost(
+/** analyzeSpaceRank POST /api/analyze/space/picture-rank */
+export async function analyzeSpaceRankUsingPost(
   body: API.SpaceRankAnalyzeRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.Space[]>('/api/space_analyze/rank', {
+  return request<API.SpaceVO[]>('/api/analyze/space/picture-rank', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -32,12 +32,12 @@ export async function getSpaceRankAnalyzeUsingPost(
   })
 }
 
-/** getSpaceSizeAnalyze POST /api/space_analyze/size */
-export async function getSpaceSizeAnalyzeUsingPost(
+/** analyzeSpaceSize POST /api/analyze/space/picture-size */
+export async function analyzeSpaceSizeUsingPost(
   body: API.SpaceSizeAnalyzeRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.SpaceSizeAnalyzeResponse[]>('/api/space_analyze/size', {
+  return request<API.SpaceSizeAnalyzeResponse[]>('/api/analyze/space/picture-size', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -47,12 +47,12 @@ export async function getSpaceSizeAnalyzeUsingPost(
   })
 }
 
-/** getSpaceTagAnalyze POST /api/space_analyze/tag */
-export async function getSpaceTagAnalyzeUsingPost(
+/** analyzeSpaceTags POST /api/analyze/space/picture-tags */
+export async function analyzeSpaceTagsUsingPost(
   body: API.SpaceTagAnalyzeRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.SpaceTagAnalyzeResponse[]>('/api/space_analyze/tag', {
+  return request<API.SpaceTagAnalyzeResponse[]>('/api/analyze/space/picture-tags', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -62,12 +62,12 @@ export async function getSpaceTagAnalyzeUsingPost(
   })
 }
 
-/** getSpaceUsageAnalyze POST /api/space_analyze/usage */
-export async function getSpaceUsageAnalyzeUsingPost(
+/** analyzeSpaceUsed POST /api/analyze/space/picture-usage */
+export async function analyzeSpaceUsedUsingPost(
   body: API.SpaceUsageAnalyzeRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.SpaceUsageAnalyzeResponse>('/api/space_analyze/usage', {
+  return request<API.SpaceUsageAnalyzeResponse>('/api/analyze/space/picture-usage', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -77,12 +77,12 @@ export async function getSpaceUsageAnalyzeUsingPost(
   })
 }
 
-/** getSpaceUserAnalyze POST /api/space_analyze/user */
-export async function getSpaceUserAnalyzeUsingPost(
+/** analyzeSpaceUserAction POST /api/analyze/space/user-action */
+export async function analyzeSpaceUserActionUsingPost(
   body: API.SpaceUserAnalyzeRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.SpaceUserAnalyzeResponse[]>('/api/space_analyze/user', {
+  return request<API.SpaceUserAnalyzeResponse[]>('/api/analyze/space/user-action', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

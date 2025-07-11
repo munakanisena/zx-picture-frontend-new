@@ -2,12 +2,12 @@
 /* eslint-disable */
 import request from '@/utils/request'
 
-/** addSpace POST /api/space/add */
-export async function addSpaceUsingPost(
-  body: API.SpaceAddRequest,
+/** activeSpace POST /api/space/active */
+export async function activeSpaceUsingPost(
+  body: API.SpaceActiveRequest,
   options?: { [key: string]: any }
 ) {
-  return request<number>('/api/space/add', {
+  return request<boolean>('/api/space/active', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -32,6 +32,21 @@ export async function deleteSpaceUsingPost(
   })
 }
 
+/** getSpaceDetailBySpaceId GET /api/space/detail */
+export async function getSpaceDetailBySpaceIdUsingGet(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getSpaceDetailBySpaceIdUsingGETParams,
+  options?: { [key: string]: any }
+) {
+  return request<API.SpaceDetailVO>('/api/space/detail', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  })
+}
+
 /** editSpace POST /api/space/edit */
 export async function editSpaceUsingPost(
   body: API.SpaceEditRequest,
@@ -47,50 +62,12 @@ export async function editSpaceUsingPost(
   })
 }
 
-/** getSpaceById GET /api/space/get */
-export async function getSpaceByIdUsingGet(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.getSpaceByIdUsingGETParams,
-  options?: { [key: string]: any }
-) {
-  return request<API.Space>('/api/space/get', {
-    method: 'GET',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
-  })
-}
-
-/** getSpaceVOById GET /api/space/get/vo */
-export async function getSpaceVoByIdUsingGet(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.getSpaceVOByIdUsingGETParams,
-  options?: { [key: string]: any }
-) {
-  return request<API.SpaceVO>('/api/space/get/vo', {
-    method: 'GET',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
-  })
-}
-
-/** listSpaceLevel GET /api/space/list/level */
-export async function listSpaceLevelUsingGet(options?: { [key: string]: any }) {
-  return request<API.SpaceLevel[]>('/api/space/list/level', {
-    method: 'GET',
-    ...(options || {}),
-  })
-}
-
-/** listSpaceByPage POST /api/space/list/page */
-export async function listSpaceByPageUsingPost(
+/** getSpacePageListAsManage POST /api/space/manage/page */
+export async function getSpacePageListAsManageUsingPost(
   body: API.SpaceQueryRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.PageSpace_>('/api/space/list/page', {
+  return request<API.PageVOSpaceVO_>('/api/space/manage/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -100,17 +77,18 @@ export async function listSpaceByPageUsingPost(
   })
 }
 
-/** listSpaceVOByPage POST /api/space/list/page/vo */
-export async function listSpaceVoByPageUsingPost(
-  body: API.SpaceQueryRequest,
-  options?: { [key: string]: any }
-) {
-  return request<API.PageSpaceVO_>('/api/space/list/page/vo', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
+/** getPrivateSpaceDetailByLoginUser GET /api/space/private/space-detail */
+export async function getPrivateSpaceDetailByLoginUserUsingGet(options?: { [key: string]: any }) {
+  return request<API.SpaceDetailVO>('/api/space/private/space-detail', {
+    method: 'GET',
+    ...(options || {}),
+  })
+}
+
+/** getTeamSpaceDetailByLoginUser GET /api/space/team/space-detail */
+export async function getTeamSpaceDetailByLoginUserUsingGet(options?: { [key: string]: any }) {
+  return request<API.SpaceTeamDetailVO>('/api/space/team/space-detail', {
+    method: 'GET',
     ...(options || {}),
   })
 }

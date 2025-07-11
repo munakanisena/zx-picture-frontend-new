@@ -2,12 +2,12 @@
 /* eslint-disable */
 import request from '@/utils/request'
 
-/** addSpaceUser POST /api/space_user/add */
+/** addSpaceUser POST /api/space/user/add-member */
 export async function addSpaceUserUsingPost(
   body: API.SpaceUserAddRequest,
   options?: { [key: string]: any }
 ) {
-  return request<number>('/api/space_user/add', {
+  return request<boolean>('/api/space/user/add-member', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,12 +17,12 @@ export async function addSpaceUserUsingPost(
   })
 }
 
-/** deleteSpaceUser POST /api/space_user/delete */
+/** deleteSpaceUser POST /api/space/user/delete */
 export async function deleteSpaceUserUsingPost(
   body: API.DeleteRequest,
   options?: { [key: string]: any }
 ) {
-  return request<boolean>('/api/space_user/delete', {
+  return request<boolean>('/api/space/user/delete', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -32,12 +32,12 @@ export async function deleteSpaceUserUsingPost(
   })
 }
 
-/** editSpaceUser POST /api/space_user/edit */
+/** editSpaceUser POST /api/space/user/edit */
 export async function editSpaceUserUsingPost(
   body: API.SpaceUserEditRequest,
   options?: { [key: string]: any }
 ) {
-  return request<boolean>('/api/space_user/edit', {
+  return request<boolean>('/api/space/user/edit', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -47,40 +47,17 @@ export async function editSpaceUserUsingPost(
   })
 }
 
-/** getSpaceUser POST /api/space_user/get */
-export async function getSpaceUserUsingPost(
+/** queryUserTeamSpacePermissions POST /api/space/user/get/space-permission */
+export async function queryUserTeamSpacePermissionsUsingPost(
   body: API.SpaceUserQueryRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.SpaceUser>('/api/space_user/get', {
+  return request<API.SpaceUserVO[]>('/api/space/user/get/space-permission', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     data: body,
-    ...(options || {}),
-  })
-}
-
-/** listSpaceUser POST /api/space_user/list */
-export async function listSpaceUserUsingPost(
-  body: API.SpaceUserQueryRequest,
-  options?: { [key: string]: any }
-) {
-  return request<API.SpaceUserVO[]>('/api/space_user/list', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  })
-}
-
-/** listMyTeamSpace POST /api/space_user/list/my */
-export async function listMyTeamSpaceUsingPost(options?: { [key: string]: any }) {
-  return request<API.SpaceUserVO[]>('/api/space_user/list/my', {
-    method: 'POST',
     ...(options || {}),
   })
 }

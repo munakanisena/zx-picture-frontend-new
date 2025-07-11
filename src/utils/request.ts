@@ -10,8 +10,6 @@ axios.defaults.timeout = 10000
 axios.defaults.withCredentials = true
 axios.defaults.headers['X-Requested-With'] = 'XMLHttpRequest'
 
-// axios.defaults.headers.post['Content-Type'] = 'application/json'
-
 // 全局请求拦截器
 axios.interceptors.request.use(
   function (config) {
@@ -32,8 +30,8 @@ axios.interceptors.response.use(
     //data 业务数据
     const { data } = response
 
-    //只要不是0就进行拦截
-    if (data.code !== 0) {
+    //不是0和40400就进行拦截
+    if (data.code !== 0 && data.code !== 40400) {
       if (data.message) {
         message.error(data.message)
       }

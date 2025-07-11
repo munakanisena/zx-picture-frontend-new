@@ -1,132 +1,129 @@
 <template>
   <div style="padding: 24px">
-    <n-card title="用户管理">
-      <!-- 搜索区域 -->
-      <n-space vertical>
-        <n-space>
-          <n-input
-            v-model:value="searchParams.username"
-            placeholder="请输入用户名搜索"
-            clearable
-            style="width: 200px"
-          />
-          <n-input
-            v-model:value="searchParams.userEmail"
-            placeholder="请输入用户邮箱搜索"
-            clearable
-            style="width: 200px"
-          />
-          <n-select
-          v-model:value="searchParams.userRole"
-          :options="userOptions"
-          placeholder="用户权限"
-          clearable
-          style="width: 120px"
-        />
-          <n-select
-            v-model:value="searchParams.isVip"
-            :options="vipOptions"
-            placeholder="会员状态"
-            clearable
-            style="width: 120px"
-          />
-          <n-button type="primary" @click="handleSearch">
-            <template #icon>
-              <n-icon><search /></n-icon>
-            </template>
-            搜索
-          </n-button>
-          <n-button @click="handleReset">
-            <template #icon>
-              <n-icon><refresh /></n-icon>
-            </template>
-            重置
-          </n-button>
-        </n-space>
-        <!-- 用户列表 -->
-        <n-data-table
-          :columns="columns"
-          :data="userList"
-          :pagination="pagination"
-          :loading="loading"
-          @update:page="handlePageChange"
-        />
-      </n-space>
-    </n-card>
-    <UserUpdate
-      :user-data="currentUser"
-      ref="userUpdateModalRef"
+    <!-- 搜索区域 -->
+    <n-h1>用户管理</n-h1>
+    <n-divider />
+    <n-flex align="center">
+      <n-input
+        v-model:value="searchParams.name"
+        placeholder="请输入用户名搜索"
+        clearable
+        style="width: 200px"
+      />
+      <n-input
+        v-model:value="searchParams.email"
+        placeholder="请输入用户邮箱搜索"
+        clearable
+        style="width: 200px"
+      />
+      <n-select
+        v-model:value="searchParams.role"
+        :options="toOptions(USER_ROLE_MAP)"
+        placeholder="用户权限"
+        clearable
+        style="width: 120px"
+      />
+      <n-select
+        v-model:value="searchParams.isVip"
+        :options="toOptions(USER_VIP_MAP)"
+        placeholder="会员状态"
+        clearable
+        style="width: 120px"
+      />
+      <n-select
+        v-model:value="searchParams.isDisabled"
+        :options="toOptions(USER_STATE_MAP)"
+        placeholder="用户状态"
+        clearable
+        style="width: 120px"
+      />
+      <n-button type="primary" @click="handleSearch">
+        <template #icon>
+          <n-icon>
+            <search />
+          </n-icon>
+        </template>
+        搜索
+      </n-button>
+      <n-button @click="handleReset">
+        <template #icon>
+          <n-icon>
+            <refresh />
+          </n-icon>
+        </template>
+        重置
+      </n-button>
+    </n-flex>
+    <div style="height: 16px"></div>
+    <n-data-table
+      remote
+      :columns="columns"
+      :data="userList"
+      :single-column="true"
+      size="large"
+      :loading="loading"
+      :pagination="pagination"
+      @update:page="handlePageChange"
+    ></n-data-table>
+    <BUserUpdate
+      v-if="!!currentUser"
+      :currentUser="currentUser"
+      ref="user-update-modal-ref"
       :refresh="fetchUserList"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { h, ref, reactive, onMounted } from 'vue'
+import { h, onMounted, reactive, ref, useTemplateRef } from 'vue'
 import {
-  NCard,
-  NSpace,
-  NInput,
-  NButton,
-  NSelect,
-  NDataTable,
-  NIcon,
-  NTag,
-  NImage,
-  useMessage,
   type DataTableColumns,
+  NButton,
+  NIcon,
+  NImage,
+  NInput,
+  NSelect,
+  NSpace,
+  NTag,
+  useMessage,
 } from 'naive-ui'
-import { Search, Refresh } from '@vicons/ionicons5'
-import { deleteUserUsingPost, getUserDetailByIdUsingGet, getUserPageListAsManageUsingPost } from '@/api/userController'
-import UserUpdate from '@/pages/admin/componets/UserUpdate.vue'
+import { Refresh, Search } from '@vicons/ionicons5'
+import { deleteUserUsingPost, getUserPageListAsManageUsingPost } from '@/api/userController'
+import BUserUpdate from '@/pages/admin/componets/BUserUpdate.vue'
+import { toOptions } from '@/utils/util.ts'
+import { USER_ROLE_MAP, USER_STATE_MAP, USER_VIP_MAP } from '@/constants/user.ts'
 
 const message = useMessage()
 const loading = ref(false)
 const userList = ref<API.UserVO[]>([])
 
 // 搜索参数
-const searchParams = reactive<API.UserQueryRequest>({
-  current: 1,
-  pageSize: 10,
-})
+const searchParams = ref<API.UserQueryRequest>({})
 
 // 分页配置
 const pagination = reactive({
   page: 1,
   pageSize: 10,
   itemCount: 0,
-  showSizePicker: true,
-  pageSizes: [10, 20, 30, 40],
+  prefix({ itemCount }: any) {
+    return `共${itemCount}条`
+  },
 })
-
-// 会员状态选项 todo 考虑使用 enum 通用获取选项
-const vipOptions = [
-  { label: '普通用户', value: 0 },
-  { label: '会员用户', value: 1 },
-]
-
-// 用户状态选项 todo 考虑使用 enum 通用获取选项
-const userOptions = [
-  { label: '普通用户', value: 'user' },
-  { label: '管理员', value: 'admin' },
-]
 
 // 表格列配置
 const columns: DataTableColumns<API.UserVO> = [
   {
     title: '用户ID',
     key: 'id',
-    width: 125,
   },
   {
     title: '头像',
-    key: 'userAvatar',
-    width: 80,
+    key: 'avatar',
     render(row) {
       return h(NImage, {
-        src: row.userAvatar,
-        width: 48,
-        height: 48,
+        src: row.avatar,
+        width: 64,
+        height: 64,
         style: {
           borderRadius: '50%',
         },
@@ -135,68 +132,61 @@ const columns: DataTableColumns<API.UserVO> = [
   },
   {
     title: '用户名',
-    key: 'username',
-    width: 90,
+    key: 'name',
   },
   {
     title: '邮箱',
-    key: 'userEmail',
-    width: 150,
+    key: 'email',
   },
   {
     title: '会员状态',
     key: 'isVip',
-    width: 80,
     render(row) {
       return h(
         NTag,
         {
           type: row.isVip ? 'success' : 'default',
         },
-        { default: () => (row.isVip ? '会员' : '普通用户') },
+        { default: () => USER_VIP_MAP[row.isVip as number] },
       )
     },
   },
   {
     title: '会员编号',
     key: 'vipNumber',
-    width: 80,
     render(row) {
       return row.vipNumber || '-'
     },
   },
   {
     title: '用户角色',
-    key: 'userRole',
-    width: 80,
+    key: 'role',
     render(row) {
       return h(
         NTag,
         {
-          type: row.userRole === 'admin' ? 'error' : 'info',
+          type: row.role === 'admin' ? 'error' : 'info',
         },
-        { default: () => (row.userRole === 'admin' ? '管理员' : '普通用户') },
+        { default: () => USER_ROLE_MAP[row.role as string] },
       )
     },
   },
   {
     title: '账号状态',
     key: 'isDisabled',
-    width: 80,
     render(row) {
       return h(
         NTag,
         {
           type: row.isDisabled ? 'error' : 'success',
         },
-        { default: () => (row.isDisabled ? '已禁用' : '正常') },
+        { default: () => USER_STATE_MAP[row.isDisabled as number] },
       )
     },
   },
   {
     title: '操作',
     key: 'actions',
-    width: 100,
     render(row) {
       return h(
         NSpace,
@@ -229,33 +219,27 @@ const columns: DataTableColumns<API.UserVO> = [
 ]
 
 // 获取用户列表
-const fetchUserList=async ()=> {
+const fetchUserList = async () => {
   loading.value = true
-    const {data} = await getUserPageListAsManageUsingPost({
-      ...searchParams,
-      current: pagination.page,
-      pageSize: pagination.pageSize,
-    })
-    if (data) {
-      userList.value = data.records || []
-      pagination.itemCount = data.total || 0
-    }
-    loading.value = false
+  const { data } = await getUserPageListAsManageUsingPost({
+    ...searchParams.value,
+    current: pagination.page,
+    pageSize: pagination.pageSize,
+  })
+  if (data) {
+    userList.value = data.records || []
+    pagination.itemCount = data.total || 0
+  }
+  loading.value = false
 }
 
-const userUpdateModalRef=ref()
+const userUpdateModalRef = useTemplateRef('user-update-modal-ref')
 const currentUser = ref<API.UserVO>()
+
 // 编辑用户
-const handleEdit=async (row: API.UserVO)=> {
-  try {
-    const {data} = await getUserDetailByIdUsingGet({ userId: row.id })
-    if (data) {
-      currentUser.value = data
-      userUpdateModalRef.value.openModal()
-    }
-  } catch (error) {
-    message.error('获取用户详情失败')
-  }
+const handleEdit = async (userVO: API.UserVO) => {
+  currentUser.value = userVO
+  userUpdateModalRef.value.openUpdateModal()
 }
 
 // 搜索
@@ -266,10 +250,11 @@ function handleSearch() {
 
 // 重置
 function handleReset() {
-  searchParams.username = ''
-  searchParams.userRole=''
-  searchParams.userEmail=''
-  searchParams.isVip=null
+  searchParams.value.name = ''
+  searchParams.value.role = null as unknown as string
+  searchParams.value.email = ''
+  searchParams.value.isVip = null as unknown as number
+  searchParams.value.isDisabled = null as unknown as number
   pagination.page = 1
   fetchUserList()
 }
@@ -282,20 +267,19 @@ function handlePageChange(page: number) {
 
 /**
  * 删除用户
- * @param user
+ * @param userInfo
  */
-const deleteUser= async (user:API.UserVO)=>{
+const deleteUser = async (userInfo: API.UserVO) => {
   await deleteUserUsingPost({
-    id:user.id
+    id: userInfo.id,
   })
   message.success('删除成功')
   await fetchUserList()
 }
 
 // 初始化
-onMounted(()=>{
+onMounted(() => {
   fetchUserList()
 })
-
 </script>
-
+<style scoped></style>
