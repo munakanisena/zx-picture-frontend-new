@@ -6,7 +6,7 @@
           <n-avatar :src="userInfo.avatar" style="width: 128px; height: 128px" round></n-avatar>
           <n-h4 style="font-size: 24px; font-weight: 700">{{ userInfo.name }}</n-h4>
           <n-tag :type="userInfo.role === 'admin' ? 'error' : 'success'">
-            {{ userInfo.role }}
+            {{ USER_ROLE_MAP[userInfo.role] }}
           </n-tag>
         </n-flex>
       </template>
@@ -33,6 +33,7 @@ import {
 } from '@vicons/ionicons5'
 import BUserButton from '@/pages/user/components/profile/BUserButton.vue'
 import { formatDistanceToNow } from '@/utils/formatDistanceToNow.ts'
+import { USER_ROLE_MAP } from '@/constants/user.ts'
 
 const userInfo = useLoginUserStore().userInfo
 </script>

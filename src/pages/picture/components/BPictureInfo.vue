@@ -20,7 +20,7 @@
             :style="{
               backgroundColor: toHexColor(pictureDetail?.originColor as string),
               width: '64px',
-              height: '20px',
+              height: '20px'
             }"
           />
           【{{ toHexColor(pictureDetail?.originColor as string) }}】
@@ -55,7 +55,6 @@
 
 <script setup lang="ts">
 import { toHexColor } from '@/utils/util.ts'
-import { ref } from 'vue'
 
 const props = defineProps<{
   pictureDetail?: API.PictureDetailVO

@@ -1,4 +1,5 @@
 <template>
+  <div style="display: flex; margin: 16px 0 0 16px"></div>
   <n-grid
     style="width: 90%; margin: 0 auto; padding: 24px"
     x-gap="24"
@@ -13,6 +14,16 @@
     </n-gi>
     <!--图片展示-->
     <n-gi span="1 l:16" v-else>
+      <n-breadcrumb style="margin-bottom: 8px">
+        <n-breadcrumb-item>
+          <router-link v-if="spaceType == 1" to="/space/person" style="color: #ff69b4"
+            >{{ spaceName }}(点击返回个人空间)
+          </router-link>
+          <router-link v-else to="/space/team" style="color: #ff69b4"
+            >{{ spaceName }}(点击返回团队空间)
+          </router-link>
+        </n-breadcrumb-item>
+      </n-breadcrumb>
       <n-card embedded>
         <template #cover>
           <n-image
@@ -36,22 +47,37 @@
     </n-gi>
     <!--图片详情组件-->
     <n-gi span="1 l:8">
-      <BPictureInfo
-        v-if="!!pictureDetail"
-        style="max-height: 800px"
-        :pictureDetail="pictureDetail"
-        :show-more="false"
-      />
-      <!--图片编辑组件-->
-      <BPictureEditForm
-        v-if="!!pictureDetail"
-        style="margin-top: 16px"
-        :pictureDetail="pictureDetail"
-      />
+      <n-flex>
+        <BPictureInfo
+          v-if="!!pictureDetail"
+          style="max-height: 800px; margin-top: 32px"
+          :pictureDetail="pictureDetail"
+          :show-more="false"
+        />
+        <!--图片编辑组件-->
+        <BPictureEditForm v-if="!!pictureDetail" :pictureDetail="pictureDetail" />
+        <n-card title="AI扩图(点击立马开始扩图,一天一次)">
+          <n-button
+            type="primary"
+            color="#8a2be2"
+            size="large"
+            @click="router.push({ name: 'picture-ai-extend', params: { id: pictureDetail?.id } })"
+            block
+          >
+            AI扩图
+          </n-button>
+        </n-card>
+      </n-flex>
     </n-gi>
   </n-grid>
   <!--裁剪组件-->
-  <BPictureCropper v-if="!!pictureDetail" ref="picture-cropper" @upload="handleUploadCrop" />
+  <BPictureCropper
+    :spaceType="spaceType"
+    :picture-id="pictureDetail.id as any"
+    v-if="!!pictureDetail"
+    ref="picture-cropper"
+    @upload="handleUploadCrop"
+  />
 </template>
 
 <script setup lang="ts">
@@ -64,13 +90,17 @@ import {
   getPictureDetailByIdUsingGet,
   uploadPictureByFileUsingPost,
 } from '@/api/pictureController.ts'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 const message = useMessage()
 const pictureDetail = ref<API.PictureDetailVO>()
 const imageCropper = useTemplateRef('picture-cropper')
 const loadingBar = useLoadingBar()
+const spaceId = ref()
+const spaceName = ref()
+const spaceType = ref()
 
 //裁剪后上传
 const handleUploadCrop = async (file: File) => {
@@ -89,6 +119,9 @@ const fetchPictureDetail = (pictureInfo: API.PictureDetailVO) => {
 onMounted(async () => {
   const { data } = await getPictureDetailByIdUsingGet({ pictureId: route.params.id as number })
   pictureDetail.value = data
+  spaceId.value = (route.query.space_id as string) || undefined
+  spaceName.value = (route.query.space_name as string) || undefined
+  spaceType.value = (route.query.space_type as string) || undefined
 })
 </script>
 

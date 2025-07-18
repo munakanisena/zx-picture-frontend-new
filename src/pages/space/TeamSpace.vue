@@ -2,15 +2,30 @@
   <div style="padding: 24px">
     <!--个人空间头部-->
     <n-flex align="center" justify="space-between" style="height: 100%">
-      <n-h1 style="margin: 0">个人空间({{ spaceInfo?.spaceName }})</n-h1>
+      <n-h1 style="margin: 0">团队空间({{ teamInfo?.spaceName }})</n-h1>
       <n-button-group>
         <n-space>
           <n-button
             @click="
               $router.push({
+                name: 'space-team-member',
+                params: { id: teamInfo?.id },
+              })
+            "
+            type="info"
+            secondary
+          >
+            <template #icon>
+              <n-icon :component="AccessibilityOutline" />
+            </template>
+            空间成员列表
+          </n-button>
+          <n-button
+            @click="
+              $router.push({
                 name: 'analyze-analyze',
                 query: {
-                  space_id: spaceInfo?.id,
+                  space_id: teamInfo?.id,
                 },
               })
             "
@@ -27,9 +42,9 @@
               $router.push({
                 name: 'picture-upload',
                 query: {
-                  space_id: spaceInfo?.id,
-                  space_name: spaceInfo?.spaceName,
-                  space_type: spaceInfo?.spaceType,
+                  space_id: teamInfo?.id,
+                  space_name: teamInfo?.spaceName,
+                  space_type: teamInfo?.spaceType,
                 },
               })
             "
@@ -46,8 +61,8 @@
               $router.push({
                 name: 'picture-upload-batch',
                 query: {
-                  space_id: spaceInfo?.id,
-                  space_name: spaceInfo?.spaceName,
+                  space_id: teamInfo?.id,
+                  space_name: teamInfo?.spaceName,
                 },
               })
             "
@@ -64,12 +79,12 @@
         <n-flex vertical>
           <div>
             <n-text
-              >存储空间: {{ formatSize(spaceInfo?.usedSize as number) }} /
-              {{ formatSize(spaceInfo?.maxSize as number) }}
+              >存储空间: {{ formatSize(teamInfo?.usedSize as number) }} /
+              {{ formatSize(teamInfo?.maxSize as number) }}
             </n-text>
             <n-progress
               type="line"
-              :percentage="((spaceInfo?.usedSize / spaceInfo?.maxSize) * 100).toFixed(1)"
+              :percentage="((teamInfo?.usedSize / teamInfo?.maxSize) * 100).toFixed(1)"
               :indicator-placement="'inside'"
               :height="24"
               processing
@@ -78,11 +93,11 @@
             />
           </div>
           <div>
-            <n-text> 存储数量: {{ spaceInfo?.usedCount }} / {{ spaceInfo?.maxCount }} 张</n-text>
+            <n-text> 存储数量: {{ teamInfo?.usedCount }} / {{ teamInfo?.maxCount }} 张</n-text>
             <n-progress
               type="line"
               :height="24"
-              :percentage="((spaceInfo?.usedCount / spaceInfo?.maxCount) * 100).toFixed(1)"
+              :percentage="((teamInfo?.usedCount / teamInfo?.maxCount) * 100).toFixed(1)"
               status="success"
               processing
               :indicator-placement="'inside'"
@@ -138,13 +153,8 @@
             </n-form-item>
           </n-gi>
           <n-gi span="4 m:2 l:1">
-            <n-form-item label="颜色搜索" label-placement="left">
-              <color-picker format="hex" @pureColorChange="onColorChange" />
-            </n-form-item>
-          </n-gi>
-          <n-gi span="4 m:2 l:1">
             <n-space>
-              <n-button type="primary" @click="fetchPictureList">
+              <n-button type="primary" @click="fetchTeamPictureList">
                 <template #icon>
                   <n-icon :component="SearchOutline" />
                 </template>
@@ -170,9 +180,9 @@
                 $router.push({
                   name: 'picture-upload',
                   query: {
-                    space_id: spaceInfo?.id,
-                    space_name: spaceInfo?.spaceName,
-                    space_type: spaceInfo?.spaceType,
+                    space_id: teamInfo?.id,
+                    space_name: teamInfo?.spaceName,
+                    space_type: teamInfo?.spaceType,
                   },
                 })
               "
@@ -182,7 +192,12 @@
           </template>
         </n-empty>
       </n-card>
-      <BPictureList :picture-list="pictureList" @picture-deleted="handlePictureDeleted" v-else />
+      <BPictureList
+        :picture-list="pictureList"
+        :space-info="teamInfo"
+        @picture-deleted="handlePictureDeleted"
+        v-else
+      />
       <!--分页-->
     </n-flex>
     <div style="margin-top: 20px"></div>
@@ -201,35 +216,39 @@
     </n-flex>
   </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue'
-import type { PaginationInfo } from 'naive-ui'
-import { useThemeVars } from 'naive-ui'
 import {
-  getPicturePageListAsPersonSpaceUsingPost,
-  searchPictureByPicColorUsingPost,
-} from '@/api/pictureController.ts'
-import { getPrivateSpaceDetailByLoginUserUsingGet } from '@/api/spaceController.ts'
+  getSpaceDetailBySpaceIdUsingGet,
+  getTeamSpaceDetailByLoginUserUsingGet,
+} from '@/api/spaceController.ts'
+import { categoryToOptions, formatSize } from '@/utils/util.ts'
+import { type PaginationInfo, useThemeVars } from 'naive-ui'
+import { getPicturePageListAsTeamSpaceUsingPost } from '@/api/pictureController.ts'
 import {
+  AccessibilityOutline,
   AlbumsOutline,
   CloudUploadOutline,
   PieChartOutline,
   RefreshOutline,
   SearchOutline,
 } from '@vicons/ionicons5'
-import { categoryToOptions, formatSize } from '@/utils/util.ts'
-import { listHomeCategoriesUsingGet } from '@/api/homeController.ts'
-import { PIC_FORMAT_OPTION } from '@/constants/picture.ts'
 import { changeColor } from 'seemly'
-import dayjs from 'dayjs'
+import { PIC_FORMAT_OPTION } from '@/constants/picture.ts'
 import BPictureList from '@/pages/picture/components/BPictureList.vue'
-import { ColorPicker } from 'vue3-colorpicker'
-import 'vue3-colorpicker/style.css'
+import { listHomeCategoriesUsingGet } from '@/api/homeController.ts'
+import dayjs from 'dayjs'
+import { useRoute } from 'vue-router'
 
-const themeVars = useThemeVars()
+const teamInfo = ref<API.SpaceTeamDetailVO>()
 const dateRange = ref<[string, string] | null>()
-const spaceInfo = ref<API.SpaceDetailVO>()
 const pictureList = ref<API.PictureVO[]>()
+const themeVars = useThemeVars()
+
+const route = useRoute()
+//如果传了ID 就用传递的ID 查询空间。否则就是用户自己的团队空间
+const spaceId = ref(route.query.space_id)
 
 // 定义搜索参数的初始状态
 const initialSearchParams: API.PictureQueryRequest = {
@@ -248,8 +267,8 @@ const searchParams = ref<API.PictureQueryRequest>(structuredClone(initialSearchP
 
 // 分页配置
 const pagination = reactive({
-  page: searchParams.value.current ?? 1,
-  pageSize: searchParams.value.pageSize ?? 10,
+  page: 1,
+  pageSize: 10,
   itemCount: 0,
 })
 
@@ -257,7 +276,7 @@ const pagination = reactive({
  * 确认日期的回调 并且转换后端接收格式
  * @param range
  */
-const onConfirmRange = (range: [number, number]) => {
+const onConfirmRange = (range: [string, string]) => {
   if (range.length < 2) return
   searchParams.value.startEditTime = dayjs(range[0]).format('YYYY-MM-DD HH:mm:ss')
   searchParams.value.endEditTime = dayjs(range[1]).format('YYYY-MM-DD HH:mm:ss')
@@ -271,50 +290,25 @@ const onClearRange = () => {
   searchParams.value.endEditTime = undefined
 }
 
-const fetchPictureList = async () => {
-  // 设置当前搜索模式为常规
-  currentSearchMode.value = 'regular'
-  activeColor.value = null
-
-  const { data } = await getPicturePageListAsPersonSpaceUsingPost({
-    ...searchParams.value,
-    current: pagination.page,
-    pageSize: pagination.pageSize,
-  })
-  if (data && data.records) {
-    pictureList.value = data.records
-    pagination.itemCount = data.total as number
+const fetchTeamInfo = async () => {
+  if (spaceId.value) {
+    const { data } = await getSpaceDetailBySpaceIdUsingGet({ spaceId: spaceId.value })
+    teamInfo.value = data
   } else {
-    pictureList.value = []
-    pagination.itemCount = 0
+    const { data } = await getTeamSpaceDetailByLoginUserUsingGet()
+    teamInfo.value = data
   }
 }
 
-type SearchMode = 'regular' | 'color'
-
-// 由于这里是两个不同的逻辑  引入状态变量来判断当前是哪种搜索模式，默认为常规搜索
-const currentSearchMode = ref<SearchMode>('regular')
-// 保存当前颜色，用于颜色模式下的分页
-const activeColor = ref<string | null>(null)
-
-/**
- * 执行主色调搜索
- * @param color
- */
-const executeColorSearch = async (color: string) => {
-  currentSearchMode.value = 'color' // 设置当前搜索模式为颜色独立搜索
-  activeColor.value = color // 保存当前活跃颜色
-
-  //因为是独立的api 清空其他搜索条件
-  searchParams.value = structuredClone(initialSearchParams)
-  dateRange.value = null
-
-  const { data } = await searchPictureByPicColorUsingPost({
-    picColor: color,
-    spaceId: spaceInfo.value?.id,
+const fetchTeamPictureList = async () => {
+  //构造请求 如果有空间id就传递
+  const requestParams = {
+    ...searchParams.value,
     current: pagination.page,
     pageSize: pagination.pageSize,
-  })
+    spaceId: spaceId.value ? (spaceId.value as any) : null,
+  }
+  const { data } = await getPicturePageListAsTeamSpaceUsingPost({ ...requestParams })
   if (data && data.records) {
     pictureList.value = data.records
     pagination.itemCount = data.total as number
@@ -327,59 +321,28 @@ const executeColorSearch = async (color: string) => {
 // 分页变化
 function handlePageChange(page: number) {
   pagination.page = page
-
-  if (currentSearchMode.value === 'regular') {
-    // 如果是常规搜索模式，调用常规列表获取
-    fetchPictureList()
-  } else if (currentSearchMode.value === 'color' && activeColor.value) {
-    // 如果是颜色搜索模式，并且有活跃的颜色，重新执行颜色搜索
-    console.log(page)
-    executeColorSearch(activeColor.value)
-  }
+  fetchTeamPictureList()
 }
 
-const fetchSpaceInfo = async () => {
-  const { data } = await getPrivateSpaceDetailByLoginUserUsingGet()
-  spaceInfo.value = data
-}
-
-//重置搜索条件 (重置默认常规搜索)
+//重置搜索条件
 const handleResetSearchParma = async () => {
-  currentSearchMode.value = 'regular'
-  activeColor.value = null
   searchParams.value = structuredClone(initialSearchParams)
   dateRange.value = null
   pagination.page = 1
-  await fetchPictureList()
+  await fetchTeamPictureList()
 }
 
 const categoryList = ref<API.CategoryVO[]>()
 
-/**
- * 主色调搜索
- * @param color
- */
-const onColorChange = async (color: string) => {
-  await executeColorSearch(color)
-}
-
 // 当子组件发出 'picture-deleted' 事件时调用的函数
 const handlePictureDeleted = () => {
-  // 当有图片删除时，根据当前模式重新获取列表
-  if (currentSearchMode.value === 'regular') {
-    fetchPictureList()
-  } else if (currentSearchMode.value === 'color' && activeColor.value) {
-    executeColorSearch(activeColor.value)
-  } else {
-    fetchPictureList()
-  }
+  fetchTeamPictureList()
 }
 
 onMounted(async () => {
-  await fetchSpaceInfo()
-  await fetchPictureList()
+  await fetchTeamInfo()
+  await fetchTeamPictureList()
   const { data } = await listHomeCategoriesUsingGet()
   categoryList.value = data
 })
 </script>
-<style scoped></style>

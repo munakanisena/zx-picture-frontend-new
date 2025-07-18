@@ -1,8 +1,8 @@
 import { useBreakpoints as useBreakpointsInner } from '@vueuse/core'
-import { format, isValid } from 'date-fns'
-import { type Component, h } from 'vue'
-import { NIcon } from 'naive-ui'
+import type { UploadCustomRequestOptions } from 'naive-ui'
+import { createDiscreteApi } from 'naive-ui'
 
+const { message } = createDiscreteApi(['message'])
 /**
  * 断点工具
  */
@@ -13,36 +13,15 @@ export const useBreakPoints = () =>
     desktop: 1200,
   })
 
-// 格式化日期
-export const safeFormatDate = (dateString: any, formatPattern = 'yyyy-MM-dd') => {
-  if (!dateString) return '-'
-
-  try {
-    // 尝试解析日期
-    const date = new Date(dateString)
-
-    // 使用 date-fns 的 isValid 函数检查有效性
-    if (!isValid(date)) {
-      console.error('无效日期:', dateString)
-      return '-'
-    }
-
-    // 使用 date-fns 的 format 函数
-    return format(date, formatPattern)
-  } catch (error) {
-    console.error('日期格式化错误:', error)
-    return '-'
-  }
-}
-
 /**
  * 获取选项
  * @param descriptionMap
  */
 export const toOptions = (descriptionMap: Record<string | number, string>) => {
-  return Object.entries(descriptionMap).map(([key, value]) => ({
-    label: value,
-    value: key,
+  return Object.entries(descriptionMap).map(([key, label]) => ({
+    label: label,
+    //这里根据类型判断 是否需要转换 因为不同枚举的key类型不同
+    value: isNaN(Number(key)) ? key : Number(key),
   }))
 }
 
@@ -58,12 +37,6 @@ export const categoryToOptions = (categories: CategoryVO[] = []) => {
 }
 
 /**
- * 渲染图标
- * @param icon
- */
-const renderIcon = (icon: Component) => () => h(NIcon, null, { default: () => h(icon) })
-
-/**
  * 转16进制
  * @param input
  */
@@ -77,7 +50,7 @@ export function toHexColor(input: string) {
 }
 
 /**
- * 字节转MB，固定返回MB单位
+ * 字节转MB，
  * @param bytes 字节数
  */
 export function bytesToMB(bytes: number): number {
@@ -86,16 +59,68 @@ export function bytesToMB(bytes: number): number {
 }
 
 /**
- * 计算原始百分比
- * @param used 已使用值
- * @param total 总值
+ * 格式化文件大小
+ * @param bytes
  */
-export function calculatePercentage(
-  used: number | null | undefined,
-  total: number | null | undefined,
-): number {
-  if (used == null || total == null || total <= 0) {
-    return 0
+export const formatSize = (bytes?: number) => {
+  if (!bytes) return '未知'
+  if (bytes < 1024) return bytes + ' B'
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB'
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+}
+
+/**
+ * 上传头像前的校验
+ * @param options
+ */
+export const checkAvatarImage = (options: UploadCustomRequestOptions) => {
+  if (options.file.file == null) {
+    return
   }
-  return (used / total) * 100
+  //取 文件信息出来
+  const file: File = options.file.file
+  //判断图片类型
+  const isJpgOrPng =
+    file.type === 'image/jpeg' ||
+    file.type === 'image/png' ||
+    file.type === 'image/jpg' ||
+    file.type === 'image/webp'
+
+  if (!isJpgOrPng) {
+    message.error('图片类型错误 请上传jpeg/png/webp/jpg 格式的图片')
+    return isJpgOrPng
+  }
+  const isLt5M = file.size / 1024 / 1024 < 5
+  if (!isLt5M) {
+    message.error('上传的头像大小不能超过5M')
+    return isLt5M
+  }
+}
+
+/**
+ * 上传图片前的校验
+ * @param options
+ */
+export const checkUploadImage = (options: UploadCustomRequestOptions) => {
+  if (options.file.file == null) {
+    return
+  }
+  //取 文件信息出来
+  const file: File = options.file.file
+  //判断图片类型
+  const isJpgOrPng =
+    file.type === 'image/jpeg' ||
+    file.type === 'image/png' ||
+    file.type === 'image/jpg' ||
+    file.type === 'image/webp'
+
+  if (!isJpgOrPng) {
+    message.error('图片类型错误 请上传jpeg/png/webp/jpg 格式的图片')
+    return isJpgOrPng
+  }
+  const isLt5M = file.size / 1024 / 1024 < 50
+  if (!isLt5M) {
+    message.error('上传的头像大小不能超过50M')
+    return isLt5M
+  }
 }

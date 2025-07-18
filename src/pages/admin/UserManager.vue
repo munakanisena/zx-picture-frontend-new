@@ -45,7 +45,7 @@
         </template>
         搜索
       </n-button>
-      <n-button @click="handleReset">
+      <n-button @click="handleResetSearchParma">
         <template #icon>
           <n-icon>
             <refresh />
@@ -59,13 +59,12 @@
       remote
       :columns="columns"
       :data="userList"
-      :single-column="true"
       size="large"
       :loading="loading"
       :pagination="pagination"
       @update:page="handlePageChange"
     ></n-data-table>
-    <BUserUpdate
+    <BUserUpdateModal
       v-if="!!currentUser"
       :currentUser="currentUser"
       ref="user-update-modal-ref"
@@ -89,7 +88,7 @@ import {
 } from 'naive-ui'
 import { Refresh, Search } from '@vicons/ionicons5'
 import { deleteUserUsingPost, getUserPageListAsManageUsingPost } from '@/api/userController'
-import BUserUpdate from '@/pages/admin/componets/BUserUpdate.vue'
+import BUserUpdateModal from '@/pages/admin/components/BUserUpdateModal.vue'
 import { toOptions } from '@/utils/util.ts'
 import { USER_ROLE_MAP, USER_STATE_MAP, USER_VIP_MAP } from '@/constants/user.ts'
 
@@ -97,8 +96,19 @@ const message = useMessage()
 const loading = ref(false)
 const userList = ref<API.UserVO[]>([])
 
-// 搜索参数
-const searchParams = ref<API.UserQueryRequest>({})
+// 定义搜索参数的初始状态
+const initialSearchParams: API.UserQueryRequest = {
+  current: 1,
+  pageSize: 10,
+  name: null,
+  email: null,
+  role: null,
+  isDisabled: null,
+  isVip: null,
+}
+
+// 初始化
+const searchParams = ref<API.UserQueryRequest>({...initialSearchParams})
 
 // 分页配置
 const pagination = reactive({
@@ -108,6 +118,66 @@ const pagination = reactive({
   prefix({ itemCount }: any) {
     return `共${itemCount}条`
   },
+})
+
+// 获取用户列表
+const fetchUserList = async () => {
+  loading.value = true
+  const { data } = await getUserPageListAsManageUsingPost({
+    ...searchParams.value,
+    current: pagination.page,
+    pageSize: pagination.pageSize,
+  })
+  if (data) {
+    userList.value = data.records || []
+    pagination.itemCount = data.total as number
+  }
+  loading.value = false
+}
+
+const userUpdateModalRef = useTemplateRef('user-update-modal-ref')
+const currentUser = ref<API.UserVO>()
+
+// 编辑用户
+const handleEdit = async (userVO: API.UserVO) => {
+  currentUser.value = userVO
+  userUpdateModalRef.value?.openUpdateModal()
+}
+
+// 搜索
+function handleSearch() {
+  pagination.page = 1
+  fetchUserList()
+}
+
+//重置搜索条件
+const handleResetSearchParma = async () => {
+  searchParams.value = structuredClone(initialSearchParams)
+  pagination.page = 1
+  await fetchUserList()
+}
+
+// 分页变化
+function handlePageChange(page: number) {
+  pagination.page = page
+  fetchUserList()
+}
+
+/**
+ * 删除用户
+ * @param userInfo
+ */
+const deleteUser = async (userInfo: API.UserVO) => {
+  await deleteUserUsingPost({
+    id: userInfo.id,
+  })
+  message.success('删除成功')
+  await fetchUserList()
+}
+
+// 初始化
+onMounted(() => {
+  fetchUserList()
 })
 
 // 表格列配置
@@ -217,69 +287,5 @@ const columns: DataTableColumns<API.UserVO> = [
     },
   },
 ]
-
-// 获取用户列表
-const fetchUserList = async () => {
-  loading.value = true
-  const { data } = await getUserPageListAsManageUsingPost({
-    ...searchParams.value,
-    current: pagination.page,
-    pageSize: pagination.pageSize,
-  })
-  if (data) {
-    userList.value = data.records || []
-    pagination.itemCount = data.total || 0
-  }
-  loading.value = false
-}
-
-const userUpdateModalRef = useTemplateRef('user-update-modal-ref')
-const currentUser = ref<API.UserVO>()
-
-// 编辑用户
-const handleEdit = async (userVO: API.UserVO) => {
-  currentUser.value = userVO
-  userUpdateModalRef.value.openUpdateModal()
-}
-
-// 搜索
-function handleSearch() {
-  pagination.page = 1
-  fetchUserList()
-}
-
-// 重置
-function handleReset() {
-  searchParams.value.name = ''
-  searchParams.value.role = null as unknown as string
-  searchParams.value.email = ''
-  searchParams.value.isVip = null as unknown as number
-  searchParams.value.isDisabled = null as unknown as number
-  pagination.page = 1
-  fetchUserList()
-}
-
-// 分页变化
-function handlePageChange(page: number) {
-  pagination.page = page
-  fetchUserList()
-}
-
-/**
- * 删除用户
- * @param userInfo
- */
-const deleteUser = async (userInfo: API.UserVO) => {
-  await deleteUserUsingPost({
-    id: userInfo.id,
-  })
-  message.success('删除成功')
-  await fetchUserList()
-}
-
-// 初始化
-onMounted(() => {
-  fetchUserList()
-})
 </script>
 <style scoped></style>

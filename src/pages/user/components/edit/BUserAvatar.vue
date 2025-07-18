@@ -7,7 +7,11 @@
         <n-p style="margin: 0">您可以点击头像以上传图片文件</n-p>
       </div>
       <n-flex>
-        <n-upload :show-file-list="false" :custom-request="sendFile" :on-before-upload="imageCheck">
+        <n-upload
+          :show-file-list="false"
+          :custom-request="sendFile"
+          :on-before-upload="checkAvatarImage"
+        >
           <n-avatar
             round
             :size="64"
@@ -28,6 +32,7 @@ import { useTemplateRef } from 'vue'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import type { UploadCustomRequestOptions } from 'naive-ui'
 import { uploadAvatarUsingPost } from '@/api/userController.ts'
+import { checkAvatarImage } from '@/utils/util.ts'
 
 const message = useMessage()
 const cropperRef = useTemplateRef('picture-cropper')
@@ -49,34 +54,6 @@ const handleUpload = async (file: File) => {
   const { data } = await uploadAvatarUsingPost({}, file)
   message.success('头像上传成功')
   userInfo.avatar = data as string
-}
-
-/**
- * 上传前的校验
- * @param options
- */
-const imageCheck = (options: UploadCustomRequestOptions) => {
-  if (options.file.file == null) {
-    return
-  }
-  //取 文件信息出来
-  const file: File = options.file.file
-  //判断图片类型
-  const isJpgOrPng =
-    file.type === 'image/jpeg' ||
-    file.type === 'image/png' ||
-    file.type === 'image/jpg' ||
-    file.type === 'image/webp'
-
-  if (!isJpgOrPng) {
-    message.error('图片类型错误 请上传jpeg/png/webp/jpg 格式的图片')
-    return isJpgOrPng
-  }
-  const isLt5M = file.size / 1024 / 1024 < 5
-  if (!isLt5M) {
-    message.error('上传的头像大小不能超过5M')
-    return isLt5M
-  }
 }
 </script>
 <style scoped></style>

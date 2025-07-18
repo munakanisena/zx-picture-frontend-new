@@ -29,15 +29,9 @@ declare namespace API {
     message?: string
   }
 
-  type BaseResponseListImageSearchResult_ = {
+  type BaseResponseListSearchPictureResult_ = {
     code?: number
-    data?: ImageSearchResult[]
-    message?: string
-  }
-
-  type BaseResponseListPictureVO_ = {
-    code?: number
-    data?: PictureVO[]
+    data?: SearchPictureResult[]
     message?: string
   }
 
@@ -56,6 +50,12 @@ declare namespace API {
   type BaseResponseListSpaceTagAnalyzeResponse_ = {
     code?: number
     data?: SpaceTagAnalyzeResponse[]
+    message?: string
+  }
+
+  type BaseResponseListSpaceTeamDetailVO_ = {
+    code?: number
+    data?: SpaceTeamDetailVO[]
     message?: string
   }
 
@@ -143,6 +143,12 @@ declare namespace API {
     message?: string
   }
 
+  type BaseResponseUserPictureStatsVO_ = {
+    code?: number
+    data?: UserPictureStatsVO
+    message?: string
+  }
+
   type capturePictureRequest = {
     captureCount?: number
     captureSource?: string
@@ -220,14 +226,14 @@ declare namespace API {
     spaceId?: number
   }
 
+  type getTeamSpaceMembersBySpaceIdUsingGETParams = {
+    /** spaceId */
+    spaceId?: number
+  }
+
   type getUserDetailByIdUsingGETParams = {
     /** userId */
     userId?: number
-  }
-
-  type ImageSearchResult = {
-    fromUrl?: string
-    thumbUrl?: string
   }
 
   type Output = {
@@ -421,6 +427,7 @@ declare namespace API {
 
   type PictureUploadRequest = {
     id?: number
+    pictureName?: string
     pictureUrl?: string
     spaceId?: number
   }
@@ -461,12 +468,23 @@ declare namespace API {
   }
 
   type SearchPictureByColorRequest = {
+    current?: number
+    pageSize?: number
     picColor?: string
+    sortField?: string
+    sortOrder?: boolean
     spaceId?: number
   }
 
   type SearchPictureByPictureRequest = {
     pictureId?: number
+    randomSeed?: number
+    searchCount?: number
+  }
+
+  type SearchPictureResult = {
+    fromUrl?: string
+    thumbUrl?: string
   }
 
   type SpaceActiveRequest = {
@@ -500,11 +518,6 @@ declare namespace API {
     userId?: number
   }
 
-  type SpaceEditRequest = {
-    id?: number
-    spaceName?: string
-  }
-
   type SpaceQueryRequest = {
     current?: number
     id?: number
@@ -515,10 +528,6 @@ declare namespace API {
     spaceName?: string
     spaceType?: number
     userId?: number
-  }
-
-  type SpaceRankAnalyzeRequest = {
-    topN?: number
   }
 
   type SpaceSizeAnalyzeRequest = {
@@ -551,9 +560,8 @@ declare namespace API {
     spaceLevel?: number
     spaceName?: string
     spaceType?: number
-    spaceUserVOList?: SpaceUserVO[]
-    totalCount?: number
-    totalSize?: number
+    usedCount?: number
+    usedSize?: number
     userId?: number
   }
 
@@ -620,7 +628,7 @@ declare namespace API {
     id?: number
     spaceId?: number
     spaceRole?: string
-    userId?: number
+    userDetailVO?: UserDetailVO
   }
 
   type SpaceVO = {
@@ -630,13 +638,12 @@ declare namespace API {
     maxCount?: number
     maxSize?: number
     permissionList?: string[]
-    spaceId?: number
     spaceLevel?: number
     spaceName?: string
     spaceType?: number
-    totalCount?: number
-    totalSize?: number
     updateTime?: string
+    usedCount?: number
+    usedSize?: number
     user?: UserDetailVO
     userId?: number
   }
@@ -649,6 +656,7 @@ declare namespace API {
 
   type uploadPictureByFileUsingPOSTParams = {
     id?: number
+    pictureName?: string
     pictureUrl?: string
     spaceId?: number
   }
@@ -694,6 +702,11 @@ declare namespace API {
   type UserLoginRequest = {
     emailOrUsername?: string
     password?: string
+  }
+
+  type UserPictureStatsVO = {
+    collectCount?: number
+    uploadCount?: number
   }
 
   type UserQueryRequest = {

@@ -17,6 +17,29 @@ export async function capturePictureUsingPost(
   })
 }
 
+/** getCollectPictureList POST /api/picture/collect */
+export async function getCollectPictureListUsingPost(
+  body: API.PictureQueryRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.PageVOPictureHomeVO_>('/api/picture/collect', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  })
+}
+
+/** getUserPictureStats GET /api/picture/collect-upload/count */
+export async function getUserPictureStatsUsingGet(options?: { [key: string]: any }) {
+  return request<API.UserPictureStatsVO>('/api/picture/collect-upload/count', {
+    method: 'GET',
+    ...(options || {}),
+  })
+}
+
 /** deletePictureById POST /api/picture/delete */
 export async function deletePictureByIdUsingPost(
   body: API.DeleteRequest,
@@ -172,7 +195,7 @@ export async function searchPictureByPictureUsingPost(
   body: API.SearchPictureByPictureRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.ImageSearchResult[]>('/api/picture/search/by-picture', {
+  return request<API.SearchPictureResult[]>('/api/picture/search/by-picture', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -187,7 +210,22 @@ export async function searchPictureByPicColorUsingPost(
   body: API.SearchPictureByColorRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.PictureVO[]>('/api/picture/search/color', {
+  return request<API.PageVOPictureVO_>('/api/picture/search/color', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  })
+}
+
+/** getPicturePageListAsTeamSpace POST /api/picture/teamSpace/page */
+export async function getPicturePageListAsTeamSpaceUsingPost(
+  body: API.PictureQueryRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.PageVOPictureVO_>('/api/picture/teamSpace/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

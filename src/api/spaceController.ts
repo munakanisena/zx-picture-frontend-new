@@ -47,17 +47,10 @@ export async function getSpaceDetailBySpaceIdUsingGet(
   })
 }
 
-/** editSpace POST /api/space/edit */
-export async function editSpaceUsingPost(
-  body: API.SpaceEditRequest,
-  options?: { [key: string]: any }
-) {
-  return request<boolean>('/api/space/edit', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
+/** getJoinTeamSpacesByLoginUser GET /api/space/join/team-spaces */
+export async function getJoinTeamSpacesByLoginUserUsingGet(options?: { [key: string]: any }) {
+  return request<API.SpaceTeamDetailVO[]>('/api/space/join/team-spaces', {
+    method: 'GET',
     ...(options || {}),
   })
 }

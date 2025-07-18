@@ -4,11 +4,9 @@
     <BCategory @categoryChange="handleCategoryChange" />
   </n-flex>
   <div style="padding: 24px">
-    <BWaterfall :pictureList="pictureList" />
+    <BWaterfall :pictureList="pictureList" :scroll-container="scrollContainerRef" />
   </div>
-  <div v-if="!hasMoreData">
-    <n-divider>没有更多了</n-divider>
-  </div>
+  <n-divider v-if="!hasMoreData && pictureList.length > 0"> 没有更多内容了</n-divider>
 </template>
 <script setup lang="ts">
 import BHomeSearch from '@/pages/home/components/BHomeSearch.vue'
@@ -16,11 +14,15 @@ import BWaterfall from '@/pages/home/components/BWaterfall.vue'
 import BCategory from '@/pages/home/components/BCategory.vue'
 import { onMounted, ref } from 'vue'
 import { pageHomePicturesUsingPost } from '@/api/homeController.ts'
+import { useInfiniteScroll } from '@vueuse/core'
 
+//用于实现加载锁。也就等待前一个请求发送完毕再发送
 const isLoading = ref(false)
+//用于停止无限滚动
 const hasMoreData = ref(true)
 const pictureList = ref<API.PictureHomeVO[]>([])
 const loadingBar = useLoadingBar()
+const scrollContainerRef = ref<HTMLElement | null>(null)
 
 const searchParma = ref<API.PictureQueryRequest>({
   current: 1,
@@ -47,43 +49,50 @@ const handleCategoryChange = (categoryId: number) => {
   fetchHomePictureList()
 }
 
-// 统一请求图片数据
+// 统一请求图片数据（使用 try...finally 优化）
 const fetchHomePictureList = async () => {
-  // 如果正在加载，或者已经没有更多数据了，则直接返回，不再执行后续代码
   if (isLoading.value || !hasMoreData.value) {
     return
   }
-  loadingBar.start()
-  const { data } = await pageHomePicturesUsingPost({
-    ...searchParma.value,
-  })
-  //如果没有数据，则表示没有更多数据了
-  if (data && data.records && data.records.length > 0) {
-    pictureList.value = [...pictureList.value, ...(data.records as API.PictureHomeVO[])]
+  // 上锁
+  isLoading.value = true
 
-    //这里判断是否还有新数据
-    if ((data.records?.length as number) < (searchParma.value?.pageSize as number)) {
+  try {
+    const { data } = await pageHomePicturesUsingPost({
+      ...searchParma.value,
+    })
+
+    if (data && data.records && data.records.length > 0) {
+      pictureList.value = [...pictureList.value, ...data.records]
+
+      if (data.total <= pictureList.value.length) {
+        hasMoreData.value = false
+      } else {
+        searchParma.value.current++
+      }
+    } else {
       hasMoreData.value = false
     }
-  } else {
-    hasMoreData.value = false
+  } catch (error) {
+    console.error('加载图片失败:', error)
+  } finally {
+    isLoading.value = false
   }
-  isLoading.value = false
-  loadingBar.finish()
 }
 
 onMounted(() => {
   fetchHomePictureList()
+  // 监听滚动事件 这里因为用了组件布局 实际页面滚动条不是window
+  scrollContainerRef.value = document.querySelector('.n-layout-content .n-layout-scroll-container')
 })
 
-// useInfiniteScroll(
-//   window,
-//   () => {
-//     ;(searchParma.value.current as number)++
-//     fetchHomePictureList()
-//   },
-//   { distance: 100, canLoadMore: () => hasMoreData.value && !isLoading.value },
-// )
+/**
+ * 监听滚动事件，实现无限滚动
+ */
+useInfiniteScroll(scrollContainerRef, fetchHomePictureList, {
+  distance: 200,
+  canLoadMore: () => !isLoading.value && hasMoreData.value,
+})
 </script>
 
 <style scoped></style>

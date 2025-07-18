@@ -1,5 +1,12 @@
 <template>
-  <masonry-wall :items="pictureList" :ssr-columns="1" :column-width="300" :gap="16">
+  <masonry-wall
+    :items="pictureList"
+    :ssr-columns="1"
+    :column-width="300"
+    :gap="16"
+    :key-mapper="(item) => item.id"
+    :scroll-container="props.scrollContainer"
+  >
     <template #default="{ item }">
       <n-card
         style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)"
@@ -10,7 +17,7 @@
       >
         <template #cover>
           <div @click="doClickPicture(item.id as number)">
-            <img :src="item.compressUrl" alt="cover" />
+            <n-image lazy :src="item.compressUrl" object-fit="contain"></n-image>
           </div>
         </template>
         <template #header-extra>
@@ -45,6 +52,21 @@
               </n-icon>
             </template>
           </n-button>
+          <n-button
+            @click="
+              router.push({
+                name: 'picture-search-by-picture',
+                query: { id: item.id, url: item.compressUrl },
+              })
+            "
+            style="flex: 1; height: 50px"
+          >
+            <template #icon>
+              <n-icon>
+                <SearchOutline />
+              </n-icon>
+            </template>
+          </n-button>
         </n-button-group>
       </n-card>
     </template>
@@ -62,15 +84,26 @@ import {
   HeartOutline,
   HeartSharp,
   ShareSocialOutline,
+  SearchOutline
 } from '@vicons/ionicons5'
 import { likeOrCollectionUsingPost } from '@/api/pictureController.ts'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
-import { PIC_INTERACTION_STATUS_MAP, PIC_INTERACTION_TYPE_MAP } from '@/constants/picture.ts'
+import { PIC_INTERACTION_STATUS_ENUM, PIC_INTERACTION_TYPE_ENUM } from '@/constants/picture.ts'
 import BPictureShare from '@/pages/picture/components/BPictureShare.vue'
 import { useRouter } from 'vue-router'
 
 const message = useMessage()
-const props = defineProps(['pictureList'])
+
+interface Props {
+  pictureList?: API.PictureHomeVO[]
+  scrollContainer?: HTMLElement | null
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  pictureList: () => [],
+  scrollContainer: null,
+})
+
 const pictureList = ref<API.PictureHomeVO[]>([])
 const shareLink = ref<string>()
 const pictureShareRef = useTemplateRef('pictureShareRef')
@@ -112,10 +145,10 @@ const clickLike = async (pictureHomeVO: API.PictureHomeVO) => {
   }
   await likeOrCollectionUsingPost({
     id: pictureHomeVO.id as number,
-    interactionType: PIC_INTERACTION_TYPE_MAP.LIKE,
+    interactionType: PIC_INTERACTION_TYPE_ENUM.LIKE,
     interactionStatus: pictureHomeVO.isLike
-      ? PIC_INTERACTION_STATUS_MAP.NOT_INTERACTED
-      : PIC_INTERACTION_STATUS_MAP.INTERACTED,
+      ? PIC_INTERACTION_STATUS_ENUM.NOT_INTERACTED
+      : PIC_INTERACTION_STATUS_ENUM.INTERACTED,
   })
   pictureHomeVO.isLike = !pictureHomeVO.isLike
   message.success(`${pictureHomeVO.isLike ? '点赞成功！' : '取消点赞！'}`)
@@ -144,10 +177,10 @@ const clickCollect = async (pictureHomeVO: API.PictureHomeVO) => {
 
   await likeOrCollectionUsingPost({
     id: pictureHomeVO.id as number,
-    interactionType: PIC_INTERACTION_TYPE_MAP.COLLECT,
+    interactionType: PIC_INTERACTION_TYPE_ENUM.COLLECT,
     interactionStatus: pictureHomeVO.isCollect
-      ? PIC_INTERACTION_STATUS_MAP.NOT_INTERACTED
-      : PIC_INTERACTION_STATUS_MAP.INTERACTED,
+      ? PIC_INTERACTION_STATUS_ENUM.NOT_INTERACTED
+      : PIC_INTERACTION_STATUS_ENUM.INTERACTED,
   })
   pictureHomeVO.isCollect = !pictureHomeVO.isCollect
   message.success(`${pictureHomeVO.isCollect ? '收藏成功！' : '取消收藏！'}`)

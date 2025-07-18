@@ -12,9 +12,13 @@
     <n-gi span="1 l:16" offset="l:3" v-if="!pictureDetail">
       <n-breadcrumb style="margin-bottom: 8px">
         <n-breadcrumb-item v-if="!spaceId">当前图片上传至公共图库</n-breadcrumb-item>
-        <n-breadcrumb-item v-else
-          >当前图片上传至个人空间:
-          <n-a href="/space/person" style="color: #ff69b4"> {{ spaceName }}(点击返回个人空间)</n-a>
+        <n-breadcrumb-item v-else>
+          <router-link v-if="spaceType == 1" to="/space/person" style="color: #ff69b4"
+            >当前图片上传至个人空间:{{ spaceName }}(点击返回个人空间)
+          </router-link>
+          <router-link v-else to="/space/team" style="color: #ff69b4"
+            >当前图片上传至团队空间:{{ spaceName }}(点击返回团队空间)
+          </router-link>
         </n-breadcrumb-item>
       </n-breadcrumb>
       <BPictureUpload :spaceId="spaceId" @fetchPictureDetail="fetchPictureDetail" />
@@ -23,9 +27,13 @@
     <n-gi span="1 l:16" v-else>
       <n-breadcrumb style="margin-bottom: 8px">
         <n-breadcrumb-item v-if="!spaceId">当前图片上传至公共图库</n-breadcrumb-item>
-        <n-breadcrumb-item v-else
-          >当前图片上传至个人空间:
-          <n-a href="/space/person" style="color: #ff69b4"> {{ spaceName }}(点击返回个人空间)</n-a>
+        <n-breadcrumb-item v-else>
+          <router-link v-if="spaceType == 1" to="/space/person" style="color: #ff69b4"
+            >当前图片上传至个人空间:{{ spaceName }}(点击返回个人空间)
+          </router-link>
+          <router-link v-else to="/space/team" style="color: #ff69b4"
+            >当前图片上传至团队空间:{{ spaceName }}(点击返回团队空间)
+          </router-link>
         </n-breadcrumb-item>
       </n-breadcrumb>
       <n-card embedded>
@@ -65,7 +73,13 @@
     </n-gi>
   </n-grid>
   <!--裁剪组件-->
-  <BPictureCropper v-if="!!pictureDetail" ref="picture-cropper" @upload="handleUploadCrop" />
+  <BPictureCropper
+    v-if="!!pictureDetail"
+    ref="picture-cropper"
+    :picture-id="pictureDetail.id as any"
+    :spaceType="spaceType"
+    @upload="handleUploadCrop"
+  />
 </template>
 
 <script setup lang="ts">
@@ -81,6 +95,7 @@ const message = useMessage()
 const route = useRoute()
 const spaceId = ref()
 const spaceName = ref()
+const spaceType = ref()
 const pictureDetail = ref<API.PictureDetailVO>()
 const imageCropper = useTemplateRef('picture-cropper')
 const loadingBar = useLoadingBar()
@@ -102,6 +117,7 @@ const fetchPictureDetail = (pictureInfo: API.PictureDetailVO) => {
 onMounted(() => {
   spaceId.value = (route.query.space_id as string) || undefined
   spaceName.value = (route.query.space_name as string) || undefined
+  spaceType.value = (route.query.space_type as string) || undefined
 })
 </script>
 

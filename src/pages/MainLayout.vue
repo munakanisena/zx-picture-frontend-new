@@ -96,9 +96,12 @@ import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import type { MenuOption } from 'naive-ui'
 import { NIcon } from 'naive-ui'
 import {
+  BookmarkOutline as FavoriteIcon,
+  BugOutline as BugIcon,
   CloudUploadOutline as UploadIcon,
   GridOutline as SpaceIcon,
   HomeOutline as HomeIcon,
+  ImagesOutline as ImageIcon,
   LibraryOutline as BlogsIcon,
   LogoGithub as GithubIcon,
   LogOutOutline as LogoutIcon,
@@ -106,8 +109,9 @@ import {
   NewspaperOutline as AdminIcon,
   PersonOutline as UserIcon,
   SettingsOutline as SettingIcon,
-  BookmarkOutline as FavoriteIcon,
   TimeOutline as TimeIcon,
+  PeopleOutline as TeamIcon,
+  AddCircleOutline as JoinIcon,
 } from '@vicons/ionicons5'
 
 import router from '@/router/router.ts'
@@ -170,7 +174,7 @@ const handleUserDropdownSelect = async (key: string | number) => {
 //侧边栏选中
 const menuKey = computed(() => {
   const path = route.path
-  for (const key of ['/favorite', '/space', '/user-profile']) {
+  for (const key of ['/favorite', '/analyze', '/user-profile']) {
     if (path.startsWith(key)) {
       return key
     }
@@ -199,8 +203,13 @@ const menuOptions = computed<MenuOption[]>(() => {
         },
         {
           key: '/user/picture-upload',
-          label: renderLabel('上传图片', '/user/picture-upload'),
+          label: renderLabel('上传图片', '/picture-upload'),
           icon: renderIcon(UploadIcon),
+        },
+        {
+          key: '/picture-capture',
+          label: renderLabel('抓取图片', '/picture-capture'),
+          icon: renderIcon(BugIcon),
         },
         {
           key: `/user-edit/${userInfo.value.id}`,
@@ -208,14 +217,31 @@ const menuOptions = computed<MenuOption[]>(() => {
           icon: renderIcon(SettingIcon),
         },
         {
-          key: '/favorite',
-          label: renderLabel('用户收藏', '/favorite'),
+          key: '/picture-collect',
+          label: renderLabel('用户收藏', '/picture-collect'),
           icon: renderIcon(FavoriteIcon),
         },
+      ],
+    },
+    {
+      key: '/space',
+      label: '空间',
+      icon: renderIcon(SpaceIcon),
+      children: [
         {
           key: '/space/person',
           label: renderLabel('用户空间', '/space/person'),
           icon: renderIcon(SpaceIcon),
+        },
+        {
+          key: '/space/team/join',
+          label: renderLabel('加入空间', '/space/team/join'),
+          icon: renderIcon(JoinIcon),
+        },
+        {
+          key: '/space/team',
+          label: renderLabel('团队空间', '/space/team'),
+          icon: renderIcon(TeamIcon ),
         },
       ],
     },
@@ -229,6 +255,16 @@ const menuOptions = computed<MenuOption[]>(() => {
           key: '/admin/user-manager',
           label: renderLabel('用户管理', '/admin/user-manager'),
           icon: renderIcon(AdminIcon),
+        },
+        {
+          key: '/admin/picture-manager',
+          label: renderLabel('图片管理', '/admin/picture-manager'),
+          icon: renderIcon(ImageIcon),
+        },
+        {
+          key: '/admin/analyze-manager',
+          label: renderLabel('空间管理', '/admin/analyze-manager'),
+          icon: renderIcon(SpaceIcon),
         },
       ],
     },
@@ -278,18 +314,4 @@ watch(
 )
 </script>
 
-<style scoped>
-.layout-content {
-  width: 100%;
-  margin: 0 auto;
-  padding-left: 20px;
-  padding-right: 20px;
-}
-
-@media only screen and (max-width: 600px) {
-  .layout-content {
-    margin-right: 12px;
-    margin-left: 12px;
-  }
-}
-</style>
+<style scoped></style>

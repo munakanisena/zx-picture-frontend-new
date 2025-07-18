@@ -32,7 +32,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import type { FormInst, FormItemRule } from 'naive-ui'
+import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
 import { ref } from 'vue'
 import { loginUsingPost } from '@/api/userController.ts'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
@@ -42,19 +42,19 @@ const message = useMessage()
 const loadingBar = useLoadingBar()
 
 const formRef = ref<FormInst | null>(null)
-//这里注意设置初始值 要不走不了表单校验
+
 const formValue = ref<API.UserLoginRequest>({
   emailOrUsername: '',
   password: '',
 })
 
-const rules = {
+const rules: FormRules = {
   emailOrUsername: [
     {
       required: true,
       message: '邮箱/用户名不能为空',
       trigger: ['blur', 'input'],
-      validator: (rule: FormItemRule, value: string) => value.length > 0,
+      validator: (_rule: FormItemRule, value: string) => value.length > 0,
     },
   ],
   password: [
@@ -62,7 +62,7 @@ const rules = {
       required: true,
       message: '密码长度大于等于8',
       trigger: ['blur', 'input'],
-      validator: (rule: FormItemRule, value: string) => value.length >= 8,
+      validator: (_rule: FormItemRule, value: string) => value.length >= 8,
     },
   ],
 }
@@ -70,8 +70,7 @@ const rules = {
 const login = async () => {
   try {
     await formRef.value?.validate()
-  } catch (e) {
-    message.info('请检查输入')
+  } catch {
     return
   }
   loadingBar.start()

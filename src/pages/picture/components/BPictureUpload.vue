@@ -2,7 +2,13 @@
   <n-card title="上传图片" style="margin-top: 16px">
     <n-tabs type="line" animated>
       <n-tab-pane name="file-upload" tab="文件上传">
-        <n-upload :show-file-list="false" :custom-request="handleFileUpload" directory-dnd :max="1">
+        <n-upload
+          :show-file-list="false"
+          :on-before-upload="checkUploadImage"
+          :custom-request="handleFileUpload"
+          directory-dnd
+          :max="1"
+        >
           <n-upload-dragger>
             <div style="margin-bottom: 12px">
               <n-icon size="48" :depth="3">
@@ -27,21 +33,11 @@
 import { ref } from 'vue'
 import type { UploadCustomRequestOptions } from 'naive-ui'
 import {
-  NButton,
-  NCard,
-  NInput,
-  NInputGroup,
-  NTabPane,
-  NTabs,
-  NUpload,
-  useLoadingBar,
-  useMessage,
-} from 'naive-ui'
-import {
   uploadPictureByFileUsingPost,
   uploadPictureByUrlUsingPost,
 } from '@/api/pictureController.ts'
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5'
+import { checkUploadImage } from '@/utils/util.ts'
 
 const emit = defineEmits(['fetchPictureDetail'])
 const imageUrl = ref()

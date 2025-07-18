@@ -17,17 +17,10 @@ export async function analyzeSpaceCategoryUsingPost(
   })
 }
 
-/** analyzeSpaceRank POST /api/analyze/space/picture-rank */
-export async function analyzeSpaceRankUsingPost(
-  body: API.SpaceRankAnalyzeRequest,
-  options?: { [key: string]: any }
-) {
+/** analyzeSpaceRank GET /api/analyze/space/picture-rank */
+export async function analyzeSpaceRankUsingGet(options?: { [key: string]: any }) {
   return request<API.SpaceVO[]>('/api/analyze/space/picture-rank', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
+    method: 'GET',
     ...(options || {}),
   })
 }

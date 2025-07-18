@@ -38,7 +38,7 @@
               </template>
               {{ pictureDetail?.collectQuantity }}
             </n-button>
-            <n-button @click="clickDownload()" style="flex: 1; height: 50px">
+            <n-button @click="clickDownload" style="flex: 1; height: 50px">
               <template #icon>
                 <n-icon>
                   <CloudDownloadOutline />
@@ -85,13 +85,15 @@ import {
   ShareSocialOutline,
 } from '@vicons/ionicons5'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
-import { PIC_INTERACTION_STATUS_MAP, PIC_INTERACTION_TYPE_MAP } from '@/constants/picture.ts'
+import { PIC_INTERACTION_STATUS_ENUM, PIC_INTERACTION_TYPE_ENUM } from '@/constants/picture.ts'
 import BPictureShare from '@/pages/picture/components/BPictureShare.vue'
 
 const shareLink = ref<string>()
 const route = useRoute()
 const router = useRouter()
+
 const pictureDetail = ref<API.PictureDetailVO>()
+
 const message = useMessage()
 const loading = ref<boolean>(false)
 const pictureShareRef = useTemplateRef('pictureShareRef')
@@ -125,10 +127,10 @@ const clickLike = async (pictureHomeVO: API.PictureHomeVO) => {
   }
   await likeOrCollectionUsingPost({
     id: pictureHomeVO.id as number,
-    interactionType: PIC_INTERACTION_TYPE_MAP.LIKE,
+    interactionType: PIC_INTERACTION_TYPE_ENUM.LIKE,
     interactionStatus: pictureHomeVO.isLike
-      ? PIC_INTERACTION_STATUS_MAP.NOT_INTERACTED
-      : PIC_INTERACTION_STATUS_MAP.INTERACTED,
+      ? PIC_INTERACTION_STATUS_ENUM.NOT_INTERACTED
+      : PIC_INTERACTION_STATUS_ENUM.INTERACTED,
   })
   pictureHomeVO.isLike = !pictureHomeVO.isLike
   message.success(`${pictureHomeVO.isLike ? '点赞成功！' : '取消点赞！'}`)
@@ -156,10 +158,10 @@ const clickCollect = async (pictureHomeVO: API.PictureHomeVO) => {
 
   await likeOrCollectionUsingPost({
     id: pictureHomeVO.id as number,
-    interactionType: PIC_INTERACTION_TYPE_MAP.COLLECT,
+    interactionType: PIC_INTERACTION_TYPE_ENUM.COLLECT,
     interactionStatus: pictureHomeVO.isCollect
-      ? PIC_INTERACTION_STATUS_MAP.NOT_INTERACTED
-      : PIC_INTERACTION_STATUS_MAP.INTERACTED,
+      ? PIC_INTERACTION_STATUS_ENUM.NOT_INTERACTED
+      : PIC_INTERACTION_STATUS_ENUM.INTERACTED,
   })
   pictureHomeVO.isCollect = !pictureHomeVO.isCollect
   message.success(`${pictureHomeVO.isCollect ? '收藏成功！' : '取消收藏！'}`)
@@ -192,7 +194,7 @@ const clickShare = (pictureHomeVO: API.PictureHomeVO) => {
   pictureShareRef.value?.openModal()
 }
 
-//跳转图片详情
+//跳转编辑
 const doClickPicture = (pictureId: number) => {
   router.push({ name: 'picture-detail', params: { id: pictureId } })
 }

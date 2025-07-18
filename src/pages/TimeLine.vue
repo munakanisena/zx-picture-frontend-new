@@ -41,27 +41,33 @@ interface timeLineItem {
 // state  已完成 进行中 规划中 重构中
 const timeLineItemList: timeLineItem[] = [
   {
-    date: '2025-07-11',
-    title: '空间模块',
-    content: ['空间详情', '空间分析'],
-    state: '进行中',
+    date: '2025-07-18',
+    title: '团队空间',
+    content: ['团队空间', '团队空间列表', '团队空间协作编辑'],
+    state: '已完成',
   },
   {
-    date: '2025-07-11',
+    date: '2025-07-14',
+    title: '空间模块',
+    content: ['激活空间', '空间详情', '空间分析', '空间管理'],
+    state: '已完成',
+  },
+  {
+    date: '2025-07-13',
     title: '主页模块',
     content: ['主页展示', '主页搜索', '瀑布流'],
-    state: '进行中',
+    state: '已完成',
   },
   {
     date: '2025-07-10',
     title: '图片模块',
-    content: ['图片展示', '图片上传', '图片详情'],
+    content: ['图片展示', '图片上传', '图片详情', '图片管理'],
     state: '已完成',
   },
   {
     date: '2025-05-19',
     title: '用户模块',
-    content: ['用户注册', '用户资料', '用户设置'],
+    content: ['用户注册', '用户资料', '用户设置', '用户管理'],
     state: '已完成',
   },
   {
@@ -69,30 +75,10 @@ const timeLineItemList: timeLineItem[] = [
     title: '项目初始化',
     state: '已完成',
   },
-  // {
-  //   title:"2025-05-21",
-  //   content:"项目模块",
-  //   state:'已完成'
-  // },
-  // {
-  //   title:"2025-05-22",
-  //   content:"任务模块",
-  //   state:'已完成'
-  // },
-  // {
-  //   title:"2025-05-23",
-  //   content:"时间线模块",
-  //   state:'已完成'
-  // },
-  // {
-  //   title:"2025-05-24",
-  //   content:"文档模块",
-  //   state:'已完成'
-  // },
 ]
 
 const getStateColor = (state: string) => {
-  const color = {
+  const color: Record<string, string> = {
     已完成: 'success',
     进行中: 'info',
     规划中: 'warning',
