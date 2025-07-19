@@ -1,3 +1,8 @@
+export const USER_ROLE_ENUM = {
+  USER: 'user',
+  ADMIN: 'admin',
+}
+
 export const USER_ROLE_MAP: Record<string, string> = {
   user: '普通用户',
   admin: '管理员',

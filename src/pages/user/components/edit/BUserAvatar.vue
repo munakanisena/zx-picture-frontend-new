@@ -10,7 +10,7 @@
         <n-upload
           :show-file-list="false"
           :custom-request="sendFile"
-          :on-before-upload="checkAvatarImage"
+          :on-before-upload="checkUploadImage"
         >
           <n-avatar
             round
@@ -22,7 +22,7 @@
       </n-flex>
     </n-flex>
     <div style="height: 12px"></div>
-    <n-text depth="3">用户名长度最大为 16, 可以是任意字符。</n-text>
+    <n-text depth="3">头像不是必须,但设置比较好!</n-text>
     <BPictureCropper ref="picture-cropper" @upload="handleUpload" />
   </n-card>
 </template>
@@ -32,7 +32,7 @@ import { useTemplateRef } from 'vue'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import type { UploadCustomRequestOptions } from 'naive-ui'
 import { uploadAvatarUsingPost } from '@/api/userController.ts'
-import { checkAvatarImage } from '@/utils/util.ts'
+import { checkUploadImage } from '@/utils/util.ts'
 
 const message = useMessage()
 const cropperRef = useTemplateRef('picture-cropper')

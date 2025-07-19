@@ -37,7 +37,8 @@
       </n-flex>
     </n-layout-header>
 
-    <n-layout :has-sider="hasSider" position="absolute" style="top: 64px; bottom: 64px">
+    <!--侧边栏-->
+    <n-layout :has-sider="hasSider" position="absolute" style="top: 64px; bottom: 48px">
       <!-- 展开时按钮的位置 -->
       <n-layout-sider
         v-if="hasSider"
@@ -64,9 +65,12 @@
         />
       </n-layout-sider>
 
+      <!--页面内容-->
       <n-layout-content>
         <router-view v-slot="{ Component }">
-          <keep-alive :include="['profile']">
+          <keep-alive
+            :include="['home', 'user-profile', 'picture-collect', 'space-person', 'space-team']"
+          >
             <component :is="Component" />
           </keep-alive>
         </router-view>
@@ -74,17 +78,23 @@
     </n-layout>
 
     <!--移动端侧边栏-->
-    <BPhoneDrawer
-      v-if="!hasSider"
-      v-model:show="showMenuDrawer"
-      :username="userInfo?.name"
-      :user-avatar="userInfo?.avatar"
-    >
-      <n-menu :value="menuKey" :options="menuOptions" style="width: 100%" />
-    </BPhoneDrawer>
+    <BDrawerLeft v-if="!hasSider" v-model:show="showMenuDrawer">
+      <n-menu :value="menuKey" :options="menuOptions" />
+    </BDrawerLeft>
 
-    <n-layout-footer position="absolute" style="height: 64px; padding: 24px" bordered>
-      Footer Footer Footer
+    <!--页脚-->
+    <n-layout-footer position="absolute" style="height: 48px" bordered>
+      <n-flex justify="center" align="center" style="width: 100%; height: 100%">
+        <span>© 2025 划船听水声</span>
+        <n-divider vertical style="height: 12px; margin: 0 12px" />
+        <n-a
+          href="https://beian.miit.gov.cn"
+          target="_blank"
+          style="text-decoration: none; color: #999"
+        >
+          湘ICP备2024089321号-2
+        </n-a>
+      </n-flex>
     </n-layout-footer>
   </n-layout>
 </template>
@@ -96,6 +106,7 @@ import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import type { MenuOption } from 'naive-ui'
 import { NIcon } from 'naive-ui'
 import {
+  AddCircleOutline as JoinIcon,
   BookmarkOutline as FavoriteIcon,
   BugOutline as BugIcon,
   CloudUploadOutline as UploadIcon,
@@ -107,18 +118,18 @@ import {
   LogOutOutline as LogoutIcon,
   MenuOutline as MenuIcon,
   NewspaperOutline as AdminIcon,
+  PeopleOutline as TeamIcon,
   PersonOutline as UserIcon,
   SettingsOutline as SettingIcon,
   TimeOutline as TimeIcon,
-  PeopleOutline as TeamIcon,
-  AddCircleOutline as JoinIcon,
 } from '@vicons/ionicons5'
 
 import router from '@/router/router.ts'
 
 import { useBreakPoints } from '@/utils/util.ts'
-import BPhoneDrawer from '@/components/BPhoneDrawer.vue'
+import BDrawerLeft from '@/components/BDrawerLeft.vue'
 import { storeToRefs } from 'pinia'
+import { USER_ROLE_ENUM } from '@/constants/user.ts'
 
 const bp = useBreakPoints()
 //大于等于 侧边栏存在
@@ -227,6 +238,7 @@ const menuOptions = computed<MenuOption[]>(() => {
       key: '/space',
       label: '空间',
       icon: renderIcon(SpaceIcon),
+      show: userStore.isLogin,
       children: [
         {
           key: '/space/person',
@@ -241,7 +253,7 @@ const menuOptions = computed<MenuOption[]>(() => {
         {
           key: '/space/team',
           label: renderLabel('团队空间', '/space/team'),
-          icon: renderIcon(TeamIcon ),
+          icon: renderIcon(TeamIcon),
         },
       ],
     },
@@ -249,7 +261,7 @@ const menuOptions = computed<MenuOption[]>(() => {
       key: '/admin',
       label: '管理',
       icon: renderIcon(AdminIcon),
-      show: userInfo?.value.role === 'admin',
+      show: userInfo?.value.role === USER_ROLE_ENUM.ADMIN,
       children: [
         {
           key: '/admin/user-manager',
@@ -269,7 +281,7 @@ const menuOptions = computed<MenuOption[]>(() => {
       ],
     },
     {
-      key: 'divider-1',
+      key: 'divider',
       type: 'divider',
     },
     {
@@ -314,4 +326,5 @@ watch(
 )
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

@@ -113,7 +113,12 @@ const actioLCollect = ref(true)
 
 //点赞
 const clickLike = async (pictureHomeVO: API.PictureHomeVO) => {
-  useLoginUserStore().checkLogin()
+  //这里需要判断是否登录了。未登录跳转
+  const isLogin = useLoginUserStore().checkLogin()
+  //这里要终止当前函数
+  if (!isLogin) {
+    return
+  }
 
   if (!actioLike.value) {
     message.warning('点太快啦！')
@@ -143,7 +148,12 @@ const clickLike = async (pictureHomeVO: API.PictureHomeVO) => {
 
 //收藏
 const clickCollect = async (pictureHomeVO: API.PictureHomeVO) => {
-  useLoginUserStore().checkLogin()
+  //这里需要判断是否登录了。未登录跳转
+  const isLogin = useLoginUserStore().checkLogin()
+  //这里要终止当前函数
+  if (!isLogin) {
+    return
+  }
 
   if (!actioLCollect.value) {
     message.warning('点太快啦！')
@@ -174,7 +184,13 @@ const clickCollect = async (pictureHomeVO: API.PictureHomeVO) => {
 
 //下载原图片
 const clickDownload = async () => {
-  useLoginUserStore().checkLogin()
+  //这里需要判断是否登录了。未登录跳转
+  const isLogin = useLoginUserStore().checkLogin()
+  //这里要终止当前函数
+  if (!isLogin) {
+    return
+  }
+
   loading.value = true
   const { data } = await pictureDownloadUsingPost({ id: pictureDetail.value?.id })
 
@@ -194,9 +210,5 @@ const clickShare = (pictureHomeVO: API.PictureHomeVO) => {
   pictureShareRef.value?.openModal()
 }
 
-//跳转编辑
-const doClickPicture = (pictureId: number) => {
-  router.push({ name: 'picture-detail', params: { id: pictureId } })
-}
 </script>
 <style scoped></style>

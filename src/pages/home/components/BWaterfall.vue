@@ -71,6 +71,7 @@
       </n-card>
     </template>
   </masonry-wall>
+  <!--图片分享弹窗-->
   <BPictureShare ref="pictureShareRef" :link="shareLink" />
 </template>
 
@@ -83,8 +84,8 @@ import {
   BookmarkOutline,
   HeartOutline,
   HeartSharp,
+  SearchOutline,
   ShareSocialOutline,
-  SearchOutline
 } from '@vicons/ionicons5'
 import { likeOrCollectionUsingPost } from '@/api/pictureController.ts'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
@@ -131,7 +132,11 @@ const actioLCollect = ref(true)
 //点赞
 const clickLike = async (pictureHomeVO: API.PictureHomeVO) => {
   //这里需要判断是否登录了。未登录跳转
-  useLoginUserStore().checkLogin()
+  const isLogin = useLoginUserStore().checkLogin()
+  //这里要终止当前函数
+  if (!isLogin) {
+    return
+  }
 
   if (!actioLike.value) {
     message.warning('点太快啦！')
@@ -162,7 +167,11 @@ const clickLike = async (pictureHomeVO: API.PictureHomeVO) => {
 //收藏
 const clickCollect = async (pictureHomeVO: API.PictureHomeVO) => {
   //这里需要判断是否登录了。未登录跳转
-  useLoginUserStore().checkLogin()
+  const isLogin = useLoginUserStore().checkLogin()
+  //这里要终止当前函数
+  if (!isLogin) {
+    return
+  }
 
   if (!actioLCollect.value) {
     message.warning('点太快啦！')

@@ -18,11 +18,10 @@ export const PIC_INTERACTION_STATUS_ENUM = {
  * 图片格式枚举
  */
 export const PIC_FORMAT_OPTION = [
-  { label: 'JPG/JPEG', value: 'JPG/JPEG' },
+  { label: 'JPEG', value: 'JPEG' },
   { label: 'PNG', value: 'PNG' },
   { label: 'GIF', value: 'GIF' },
   { label: 'WEBP', value: 'WEBP' },
-  { label: '其他', value: '其他' },
 ]
 
 /**

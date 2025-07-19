@@ -14,9 +14,10 @@ export const useLoginUserStore = defineStore(
      */
     function checkLogin() {
       if (!isLogin.value) {
-        router.push({name: 'login' })
+        router.push({ name: 'login' })
+        return false
       }
-      return
+      return true
     }
 
     /**
@@ -63,7 +64,7 @@ export const useLoginUserStore = defineStore(
       }
     }
 
-    return { userInfo, isLogin, setLoginUser, logout, refreshUser,checkLogin }
+    return { userInfo, isLogin, setLoginUser, logout, refreshUser, checkLogin }
   },
   //存储选项
   {

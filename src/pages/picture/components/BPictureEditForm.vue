@@ -66,7 +66,6 @@ import { onMounted, reactive, ref, useTemplateRef } from 'vue'
 import { listHomeCategoriesUsingGet } from '@/api/homeController.js'
 import { categoryToOptions } from '@/utils/util.js'
 import { editPictureUsingPost } from '@/api/pictureController.ts'
-import router from '@/router/router.ts'
 
 const props = defineProps<{
   pictureDetail?: API.PictureDetailVO

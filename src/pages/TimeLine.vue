@@ -41,9 +41,15 @@ interface timeLineItem {
 // state  已完成 进行中 规划中 重构中
 const timeLineItemList: timeLineItem[] = [
   {
+    date: '2025-07-19',
+    title: '优化项目',
+    content: ['协作编辑', '爬取图片'],
+    state: '进行中',
+  },
+  {
     date: '2025-07-18',
     title: '团队空间',
-    content: ['团队空间', '团队空间列表', '团队空间协作编辑'],
+    content: ['团队空间', '协作编辑'],
     state: '已完成',
   },
   {

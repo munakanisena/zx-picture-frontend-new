@@ -7,18 +7,28 @@
         <n-grid :x-gap="12" :cols="4" item-responsive responsive="screen">
           <n-gi span="4 m:2 l:1">
             <n-form-item label="图片名称" label-placement="left">
-              <n-input v-model:value="searchParma.picName" placeholder="请输入图片名称" clearable />
+              <n-input
+                v-model:value="searchParams.picName"
+                placeholder="请输入图片名称"
+                clearable
+              />
             </n-form-item>
           </n-gi>
           <n-gi span="4 m:2 l:1">
-            <n-form-item label="图片标签" label-placement="left">
-              <n-input v-model:value="searchParma.tags" placeholder="请输入标签" clearable />
+            <n-form-item label="标签(可以输入多个)" label-placement="left">
+              <n-select
+                v-model:value="searchParams.tags"
+                tag
+                filterable
+                multiple
+                placeholder="请输入图片标签"
+              />
             </n-form-item>
           </n-gi>
           <n-gi span="4 m:2 l:1">
             <n-form-item label="图片格式" label-placement="left">
               <n-select
-                v-model:value="searchParma.originFormat"
+                v-model:value="searchParams.originFormat"
                 :options="PIC_FORMAT_OPTION"
                 placeholder="请选择图片格式"
                 clearable
@@ -44,7 +54,53 @@
         </n-grid>
       </n-card>
       <!--图片展示列表-->
-      <n-card :bordered="false" v-if="!collectPictureList">
+      <n-grid
+        v-if="collectPictureList?.length > 0"
+        :x-gap="12"
+        :y-gap="12"
+        cols="1 s:2 m:3 l:4 xl:5 "
+        responsive="screen"
+      >
+        <n-gi span="1" v-for="pictureHomeVO in collectPictureList" :key="pictureHomeVO.id">
+          <n-card
+            style="
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+              width: 100%;
+              height: 350px;
+              text-align: center;
+            "
+            :title="pictureHomeVO.picName"
+            hoverable
+            embedded
+            content-style="padding: 0"
+          >
+            <template #cover>
+              <div @click="doClickPicture(pictureHomeVO.id as number)">
+                <n-image lazy :src="pictureHomeVO.compressUrl" object-fit="contain"></n-image>
+              </div>
+            </template>
+            <n-button-group size="small" style="height: 50px; width: 100%; display: flex">
+              <n-button @click="cancelCollect(pictureHomeVO)" style="flex: 1; height: 50px">
+                <template #icon>
+                  <n-icon>
+                    <HeartOutline />
+                  </n-icon>
+                </template>
+                取消收藏
+              </n-button>
+              <n-button @click="shareAction(pictureHomeVO)" style="flex: 1; height: 50px">
+                <template #icon>
+                  <n-icon>
+                    <ShareSocialOutline />
+                  </n-icon>
+                </template>
+                分享
+              </n-button>
+            </n-button-group>
+          </n-card>
+        </n-gi>
+      </n-grid>
+      <n-card :bordered="false" v-else>
         <n-empty size="large" description="你什么也找不到" style="width: 100%; height: 100%">
           <template #extra>
             <n-button
@@ -60,16 +116,15 @@
           </template>
         </n-empty>
       </n-card>
-      <BPictureList :picture-list="collectPictureList" v-else />
       <!--分页-->
     </n-flex>
     <div style="margin-top: 20px"></div>
     <n-flex justify="end">
       <n-pagination
+        v-show="collectPictureList?.length > 0"
         :item-count="pagination.itemCount"
         size="large"
         v-model:page="pagination.page"
-        :page-count="pagination.pageCount"
         :prefix="
           (paginationInfo: PaginationInfo) => {
             return '共' + paginationInfo.itemCount + '条'
@@ -78,51 +133,65 @@
         :on-update:page="handlePageChange"
       ></n-pagination>
     </n-flex>
+    <!--分享弹窗-->
+    <BPictureShare ref="pictureShareRef" :link="shareLink" />
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
-import { PIC_FORMAT_OPTION } from '@/constants/picture.ts'
-import { RefreshOutline, SearchOutline } from '@vicons/ionicons5'
+import { onMounted, reactive, ref, useTemplateRef } from 'vue'
+import {
+  PIC_FORMAT_OPTION,
+  PIC_INTERACTION_STATUS_ENUM,
+  PIC_INTERACTION_TYPE_ENUM,
+} from '@/constants/picture.ts'
+import { HeartOutline, RefreshOutline, SearchOutline, ShareSocialOutline } from '@vicons/ionicons5'
 import type { PaginationInfo } from 'naive-ui'
-import BPictureList from '@/pages/picture/components/BPictureList.vue'
-import { getCollectPictureListUsingPost } from '@/api/pictureController.ts'
+import {
+  getCollectPictureListUsingPost,
+  likeOrCollectionUsingPost,
+} from '@/api/pictureController.ts'
+import BPictureShare from '@/pages/picture/components/BPictureShare.vue'
+import { useRouter } from 'vue-router'
+
+const shareLink = ref<string>()
+const router = useRouter()
+const message = useMessage()
+const pictureShareRef = useTemplateRef('pictureShareRef')
+const collectPictureList = ref<API.PictureHomeVO[]>()
+// 定义搜索参数的初始状态
+const initialSearchParams: API.PictureQueryRequest = {
+  current: 1,
+  pageSize: 10,
+  picName: null,
+  tags: null,
+  originFormat: null,
+}
+const searchParams = ref<API.PictureQueryRequest>(structuredClone(initialSearchParams))
 
 // 分页配置
 const pagination = reactive({
   page: 1,
   pageSize: 10,
-  pageCount: 0,
   itemCount: 0,
 })
 
-const collectPictureList = ref<API.PictureHomeVO[]>()
-const searchParma = ref<API.PictureQueryRequest>({})
-
 const fetchCollectPictureList = async () => {
   const { data } = await getCollectPictureListUsingPost({
-    ...searchParma.value,
+    ...searchParams.value,
     current: pagination.page,
     pageSize: pagination.pageSize,
   })
-  if (data?.records?.length == 0) return
-  collectPictureList.value = data.records
-  pagination.itemCount = data.total as number
-  pagination.pageCount = data.pages as number
+  if (data && data?.records?.length > 0) {
+    collectPictureList.value = data.records
+    pagination.itemCount = data.total as number
+  } else {
+    collectPictureList.value = []
+  }
 }
 
 //重置搜索条件
 const handleResetSearchParma = async () => {
-  searchParma.value = {
-    current: 1,
-    pageSize: 20,
-    searchText: undefined,
-    tags: undefined,
-    categoryId: undefined,
-    startEditTime: undefined,
-    endEditTime: undefined,
-    originFormat: undefined,
-  }
+  searchParams.value = structuredClone(initialSearchParams)
   await fetchCollectPictureList()
 }
 
@@ -130,6 +199,33 @@ const handleResetSearchParma = async () => {
 function handlePageChange(page: number) {
   pagination.page = page
   fetchCollectPictureList()
+}
+
+const cancelCollect = async (pictureHomeVO: API.PictureHomeVO) => {
+  try {
+    await likeOrCollectionUsingPost({
+      id: pictureHomeVO.id as number,
+      interactionType: PIC_INTERACTION_TYPE_ENUM.COLLECT,
+      interactionStatus: pictureHomeVO.isLike
+        ? PIC_INTERACTION_STATUS_ENUM.NOT_INTERACTED
+        : PIC_INTERACTION_STATUS_ENUM.INTERACTED,
+    })
+    message.success('取消收藏成功')
+    await fetchCollectPictureList()
+  } catch (e: any) {
+    console.log(e.message)
+  }
+}
+
+//分享
+const shareAction = (pictureHomeVO: API.PictureHomeVO) => {
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/detail/${pictureHomeVO.id}`
+  pictureShareRef.value?.openModal()
+}
+
+//跳转图片详情
+const doClickPicture = (pictureId: number) => {
+  router.push({ name: 'picture-detail', params: { id: pictureId } })
 }
 
 onMounted(() => {

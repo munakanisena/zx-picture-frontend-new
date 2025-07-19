@@ -1,10 +1,17 @@
 <template>
-  <div style="padding: 12px">
+  <div style="padding: 12px; height: 100%">
     <n-space vertical :size="12">
-      <n-card title="🚀 我加入的团队空间" :bordered="false" :style="{ borderRadius: '8px' }">
-        <n-list hoverable clickable>
+      <n-card
+        title="🚀 我加入的团队空间"
+        :bordered="false"
+        :style="{ borderRadius: '8px', height: '100%' }"
+      >
+        <n-list v-if="spaceTeamList?.length > 0" hoverable clickable>
           <n-list-item v-for="team in spaceTeamList" :key="team.id">
-            <n-thing :title="'空间名称: ' + team.spaceName" :description="`ID: ${team.id}`"></n-thing>
+            <n-thing
+              :title="'空间名称: ' + team.spaceName"
+              :description="`ID: ${team.id}`"
+            ></n-thing>
             <template #suffix>
               <n-space align="center">
                 <n-button
@@ -21,6 +28,7 @@
             </template>
           </n-list-item>
         </n-list>
+        <n-empty description="暂无数据" v-else> </n-empty>
       </n-card>
     </n-space>
   </div>
@@ -33,12 +41,15 @@ import { EnterOutline as EnterIcon } from '@vicons/ionicons5'
 const spaceTeamList = ref<API.SpaceTeamDetailVO[]>([])
 
 const message = useMessage()
+
 const fetchSpaceTeamList = async () => {
   const { data } = await getJoinTeamSpacesByLoginUserUsingGet()
-  if (data == null) {
+  if (data && data.length > 0) {
+    spaceTeamList.value = data
+  } else {
     message.warning('您还没有加入团队空间')
+    spaceTeamList.value = []
   }
-  spaceTeamList.value = data
 }
 
 onMounted(() => {

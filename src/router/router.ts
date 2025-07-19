@@ -9,7 +9,8 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      //此时，AuthLayout.vue 会作为 所有子路由的父容器，例如访问 /login 时，会先渲染 AuthLayout.vue，再在其内部渲染 Login.vue。
+      //此时，AuthLayout.vue 会作为 所有子路由的父容器，例如访问 /login 时，
+      //会先渲染 AuthLayout.vue，再在其内部渲染 Login.vue。
       path: '/*',
       component: () => import('../pages/auth/AuthLayout.vue'),
       children: [

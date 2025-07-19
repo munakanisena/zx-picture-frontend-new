@@ -13,10 +13,5 @@
 </template>
 <script setup lang="ts">
 import { dateZhCN, zhCN } from 'naive-ui'
-
 </script>
-<style scoped>
-a {
-  text-decoration: none;
-}
-</style>
+<style scoped></style>

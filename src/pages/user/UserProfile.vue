@@ -6,7 +6,7 @@
     style="height: 100%; margin: 0 auto"
     item-responsive
   >
-    <n-gi span="24 l:8 " style="margin: 12px 0 12px 12px">
+    <n-gi span="24 l:8 " style="margin: 12px">
       <BUserCard style="height: 100%" />
     </n-gi>
     <n-gi span="24 l:16" style="padding: 12px">

@@ -6,6 +6,9 @@
   <div style="padding: 24px">
     <BWaterfall :pictureList="pictureList" :scroll-container="scrollContainerRef" />
   </div>
+  <n-back-top :bottom="64" :right="48" >
+
+  </n-back-top>
   <n-divider v-if="!hasMoreData && pictureList.length > 0"> 没有更多内容了</n-divider>
 </template>
 <script setup lang="ts">

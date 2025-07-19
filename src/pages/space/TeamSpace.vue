@@ -112,7 +112,11 @@
         <n-grid :x-gap="12" :cols="4" item-responsive responsive="screen">
           <n-gi span="4 m:2 l:1">
             <n-form-item label="图片名称" label-placement="left">
-              <n-input v-model:value="searchParams.picName" placeholder="请输入图片名称" clearable />
+              <n-input
+                v-model:value="searchParams.picName"
+                placeholder="请输入图片名称"
+                clearable
+              />
             </n-form-item>
           </n-gi>
           <n-gi span="4 m:2 l:1">
@@ -126,8 +130,14 @@
             </n-form-item>
           </n-gi>
           <n-gi span="4 m:2 l:1">
-            <n-form-item label="图片标签" label-placement="left">
-              <n-input v-model:value="searchParams.tags" placeholder="请输入标签" clearable />
+            <n-form-item label="标签(可以输入多个)" label-placement="left">
+              <n-select
+                v-model:value="searchParams.tags"
+                tag
+                filterable
+                multiple
+                placeholder="请输入图片标签"
+              />
             </n-form-item>
           </n-gi>
           <n-gi span="4 m:2 l:1">
@@ -171,7 +181,13 @@
         </n-grid>
       </n-card>
       <!--图片展示列表-->
-      <n-card :bordered="false" v-if="!pictureList">
+      <BPictureList
+        v-if="pictureList?.length > 0"
+        :picture-list="pictureList"
+        :space-info="teamInfo"
+        @picture-deleted="handlePictureDeleted"
+      />
+      <n-card :bordered="false" v-else>
         <n-empty size="large" description="你什么也找不到" style="width: 100%; height: 100%">
           <template #extra>
             <n-button
@@ -192,17 +208,12 @@
           </template>
         </n-empty>
       </n-card>
-      <BPictureList
-        :picture-list="pictureList"
-        :space-info="teamInfo"
-        @picture-deleted="handlePictureDeleted"
-        v-else
-      />
       <!--分页-->
     </n-flex>
     <div style="margin-top: 20px"></div>
     <n-flex justify="end">
       <n-pagination
+        v-show="pictureList?.length > 0"
         :item-count="pagination.itemCount"
         size="large"
         v-model:page="pagination.page"
@@ -309,7 +320,7 @@ const fetchTeamPictureList = async () => {
     spaceId: spaceId.value ? (spaceId.value as any) : null,
   }
   const { data } = await getPicturePageListAsTeamSpaceUsingPost({ ...requestParams })
-  if (data && data.records) {
+  if (data && data.records.length > 0) {
     pictureList.value = data.records
     pagination.itemCount = data.total as number
   } else {

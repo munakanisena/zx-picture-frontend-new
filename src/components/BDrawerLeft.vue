@@ -4,6 +4,7 @@
       :native-scrollbar="false"
       :scrollbar-props="{ trigger: 'none' }"
       header-style="height: 100px; padding: 0"
+      body-content-style="padding:0"
     >
       <template #header>
         <div
@@ -16,13 +17,4 @@
     </n-drawer-content>
   </n-drawer>
 </template>
-<script setup lang="ts">
-interface Props {
-  username?: string
-  userAvatar?: string
-}
-const props = withDefaults(defineProps<Props>(), {
-  username: '未登录',
-  userAvatar: 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg',
-})
-</script>
+<script setup lang="ts"></script>

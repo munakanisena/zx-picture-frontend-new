@@ -8,7 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    BPhoneDrawer: typeof import('./src/components/BPhoneDrawer.vue')['default']
+    BDrawerLeft: typeof import('./src/components/BDrawerLeft.vue')['default']
     BPictureCropper: typeof import('./src/components/BPictureCropper.vue')['default']
     BPictureEdit: typeof import('./src/components/BPictureEdit.vue')['default']
     BPictureSearchFrom: typeof import('./src/components/BPictureSearchFrom.vue')['default']
@@ -24,6 +24,7 @@ declare module 'vue' {
     NA: typeof import('naive-ui')['NA']
     NAlert: typeof import('naive-ui')['NAlert']
     NAvatar: typeof import('naive-ui')['NAvatar']
+    NBackTop: typeof import('naive-ui')['NBackTop']
     NBlockquote: typeof import('naive-ui')['NBlockquote']
     NBreadcrumb: typeof import('naive-ui')['NBreadcrumb']
     NBreadcrumbItem: typeof import('naive-ui')['NBreadcrumbItem']
@@ -97,6 +98,7 @@ declare module 'vue' {
     NThing: typeof import('naive-ui')['NThing']
     NTimeline: typeof import('naive-ui')['NTimeline']
     NTimelineItem: typeof import('naive-ui')['NTimelineItem']
+    NTooltip: typeof import('naive-ui')['NTooltip']
     NU: typeof import('naive-ui')['NU']
     NUl: typeof import('naive-ui')['NUl']
     NUpload: typeof import('naive-ui')['NUpload']

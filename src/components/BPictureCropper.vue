@@ -42,7 +42,7 @@ import 'vue-cropper/dist/index.css'
 import { VueCropper } from 'vue-cropper'
 import { computed, onUnmounted, ref, useTemplateRef, watchEffect } from 'vue'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
-import PictureEditWebSocket from '@/utils/pictureEditWebSocket.ts'
+import PictureEditWebSocket from '@/ws/pictureEditWebSocket.ts'
 import { PICTURE_EDIT_ACTION_ENUM, PICTURE_EDIT_MESSAGE_TYPE_ENUM } from '@/constants/picture.ts'
 import { SPACE_TYPE_ENUM } from '@/constants/space.ts'
 
