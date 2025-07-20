@@ -47,6 +47,21 @@ export async function getSpaceDetailBySpaceIdUsingGet(
   })
 }
 
+/** editSpace POST /api/space/edit */
+export async function editSpaceUsingPost(
+  body: API.SpaceEditRequest,
+  options?: { [key: string]: any }
+) {
+  return request<boolean>('/api/space/edit', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  })
+}
+
 /** getJoinTeamSpacesByLoginUser GET /api/space/join/team-spaces */
 export async function getJoinTeamSpacesByLoginUserUsingGet(options?: { [key: string]: any }) {
   return request<API.SpaceTeamDetailVO[]>('/api/space/join/team-spaces', {
@@ -74,6 +89,21 @@ export async function getSpacePageListAsManageUsingPost(
 export async function getPrivateSpaceDetailByLoginUserUsingGet(options?: { [key: string]: any }) {
   return request<API.SpaceDetailVO>('/api/space/private/space-detail', {
     method: 'GET',
+    ...(options || {}),
+  })
+}
+
+/** switchSpaceContext POST /api/space/switch */
+export async function switchSpaceContextUsingPost(
+  body: API.SpaceSwitchRequest,
+  options?: { [key: string]: any }
+) {
+  return request<boolean>('/api/space/switch', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
     ...(options || {}),
   })
 }

@@ -88,7 +88,8 @@ import BPictureCropper from '@/components/BPictureCropper.vue'
 import BPictureEditForm from '@/pages/picture/components/BPictureEditForm.vue'
 import {
   getPictureDetailByIdUsingGet,
-  uploadPictureByFileUsingPost,
+  uploadPictureByFileToPublicUsingPost,
+  uploadPictureByFileToSpaceUsingPost,
 } from '@/api/pictureController.ts'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -105,8 +106,13 @@ const spaceType = ref()
 //裁剪后上传
 const handleUploadCrop = async (file: File) => {
   loadingBar.start()
-  const { data } = await uploadPictureByFileUsingPost({}, { id: pictureDetail.value?.id }, file)
-  pictureDetail.value = data as API.PictureDetailVO
+  if (spaceId.value) {
+    const { data } = await uploadPictureByFileToSpaceUsingPost({}, { spaceId: spaceId.value }, file)
+    pictureDetail.value = data as API.PictureDetailVO
+  } else {
+    const { data } = await uploadPictureByFileToPublicUsingPost({}, {}, file)
+    pictureDetail.value = data as API.PictureDetailVO
+  }
   loadingBar.finish()
   message.success('图片上传成功！')
 }

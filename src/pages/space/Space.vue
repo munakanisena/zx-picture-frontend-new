@@ -173,6 +173,7 @@
       <!--图片展示列表-->
       <BPictureList
         v-if="pictureList?.length > 0"
+        :space-info="spaceInfo"
         :picture-list="pictureList"
         @picture-deleted="handlePictureDeleted"
       />
@@ -223,7 +224,10 @@ import {
   getPicturePageListAsPersonSpaceUsingPost,
   searchPictureByPicColorUsingPost,
 } from '@/api/pictureController.ts'
-import { getPrivateSpaceDetailByLoginUserUsingGet } from '@/api/spaceController.ts'
+import {
+  getPrivateSpaceDetailByLoginUserUsingGet,
+  switchSpaceContextUsingPost,
+} from '@/api/spaceController.ts'
 import {
   AlbumsOutline,
   CloudUploadOutline,
@@ -354,7 +358,11 @@ function handlePageChange(page: number) {
 
 const fetchSpaceInfo = async () => {
   const { data } = await getPrivateSpaceDetailByLoginUserUsingGet()
-  spaceInfo.value = data
+  if (data) {
+    spaceInfo.value = data
+    //还需要进行空间登录
+    await switchSpaceContextUsingPost({ spaceId: spaceInfo.value.id })
+  }
 }
 
 //重置搜索条件 (重置默认常规搜索)

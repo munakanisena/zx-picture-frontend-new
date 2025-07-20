@@ -19,7 +19,11 @@
           </div>
         </template>
         <n-button-group size="small" style="height: 50px; width: 100%; display: flex">
-          <n-button @click="doEditPicture(pictureVO)" style="flex: 1; height: 50px">
+          <n-button
+            v-if="loginUserMember?.spaceRole !== SPACE_ROLE_ENUM.VIEWER"
+            @click="doEditPicture(pictureVO)"
+            style="flex: 1; height: 50px"
+          >
             <template #icon>
               <n-icon>
                 <BuildOutline />
@@ -27,7 +31,11 @@
             </template>
             编辑
           </n-button>
-          <n-button @click="doClickDelete(pictureVO.id as number)" style="flex: 1; height: 50px">
+          <n-button
+            v-if="loginUserMember?.spaceRole !== SPACE_ROLE_ENUM.VIEWER"
+            @click="doClickDelete(pictureVO.id as number)"
+            style="flex: 1; height: 50px"
+          >
             <template #icon>
               <n-icon>
                 <TrashOutline />
@@ -55,11 +63,13 @@ import { BuildOutline, ShareSocialOutline, TrashOutline } from '@vicons/ionicons
 import { useRouter } from 'vue-router'
 import BPictureShare from '@/pages/picture/components/BPictureShare.vue'
 import { ref, useTemplateRef } from 'vue'
-import { deletePictureByIdUsingPost } from '@/api/pictureController.ts' // 引入卡片组件
+import { deletePictureByIdUsingPost } from '@/api/pictureController.ts'
+import { SPACE_ROLE_ENUM } from '@/constants/space.ts' // 引入卡片组件
 
 interface Props {
   pictureList?: API.PictureVO[]
   spaceInfo?: API.SpaceTeamDetailVO | API.SpaceDetailVO
+  loginUserMember?: API.SpaceUserVO
 }
 
 const shareLink = ref<string>()
@@ -95,7 +105,7 @@ const doClickPicture = (pictureId: number) => {
 
 //删除图片
 const doClickDelete = async (pictureId: number) => {
-  await deletePictureByIdUsingPost({ id: pictureId })
+  await deletePictureByIdUsingPost({ id: pictureId, spaceId: props.spaceInfo?.id })
   emits('picture-deleted')
   message.success('删除成功')
 }

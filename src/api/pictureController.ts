@@ -250,25 +250,10 @@ export async function updatePictureUsingPost(
   })
 }
 
-/** uploadPictureByCapture POST /api/picture/upload/capture */
-export async function uploadPictureByCaptureUsingPost(
-  body: API.PictureUploadRequest,
-  options?: { [key: string]: any }
-) {
-  return request<boolean>('/api/picture/upload/capture', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  })
-}
-
-/** uploadPictureByFile POST /api/picture/upload/file */
-export async function uploadPictureByFileUsingPost(
+/** uploadPictureByFileToPublic POST /api/picture/upload-public/file */
+export async function uploadPictureByFileToPublicUsingPost(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.uploadPictureByFileUsingPOSTParams,
+  params: API.uploadPictureByFileToPublicUsingPOSTParams,
   body: {},
   file?: File,
   options?: { [key: string]: any }
@@ -295,7 +280,7 @@ export async function uploadPictureByFileUsingPost(
     }
   })
 
-  return request<API.PictureDetailVO>('/api/picture/upload/file', {
+  return request<API.PictureDetailVO>('/api/picture/upload-public/file', {
     method: 'POST',
     params: {
       ...params,
@@ -306,12 +291,68 @@ export async function uploadPictureByFileUsingPost(
   })
 }
 
-/** uploadPictureByUrl POST /api/picture/upload/url */
-export async function uploadPictureByUrlUsingPost(
+/** uploadPictureByUrlToPublic POST /api/picture/upload-public/url */
+export async function uploadPictureByUrlToPublicUsingPost(
   body: API.PictureUploadRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.PictureDetailVO>('/api/picture/upload/url', {
+  return request<API.PictureDetailVO>('/api/picture/upload-public/url', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  })
+}
+
+/** uploadPictureByFileToSpace POST /api/picture/upload-space/file */
+export async function uploadPictureByFileToSpaceUsingPost(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.uploadPictureByFileToSpaceUsingPOSTParams,
+  body: {},
+  file?: File,
+  options?: { [key: string]: any }
+) {
+  const formData = new FormData()
+
+  if (file) {
+    formData.append('file', file)
+  }
+
+  Object.keys(body).forEach((ele) => {
+    const item = (body as any)[ele]
+
+    if (item !== undefined && item !== null) {
+      if (typeof item === 'object' && !(item instanceof File)) {
+        if (item instanceof Array) {
+          item.forEach((f) => formData.append(ele, f || ''))
+        } else {
+          formData.append(ele, JSON.stringify(item))
+        }
+      } else {
+        formData.append(ele, item)
+      }
+    }
+  })
+
+  return request<API.PictureDetailVO>('/api/picture/upload-space/file', {
+    method: 'POST',
+    params: {
+      ...params,
+    },
+    data: formData,
+    requestType: 'form',
+    ...(options || {}),
+  })
+}
+
+/** uploadPictureByCapture POST /api/picture/upload/capture */
+export async function uploadPictureByCaptureUsingPost(
+  body: API.PictureUploadRequest,
+  options?: { [key: string]: any }
+) {
+  return request<boolean>('/api/picture/upload/capture', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

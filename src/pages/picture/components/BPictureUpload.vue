@@ -33,8 +33,8 @@
 import { ref } from 'vue'
 import type { UploadCustomRequestOptions } from 'naive-ui'
 import {
-  uploadPictureByFileUsingPost,
-  uploadPictureByUrlUsingPost,
+  uploadPictureByFileToPublicUsingPost,
+  uploadPictureByFileToSpaceUsingPost, uploadPictureByUrlToPublicUsingPost
 } from '@/api/pictureController.ts'
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5'
 import { checkUploadImage } from '@/utils/util.ts'
@@ -51,10 +51,15 @@ const props = defineProps<{
 const handleFileUpload = async (options: UploadCustomRequestOptions) => {
   const file: File = options.file.file as File
   loadingBar.start()
-  const { data } = await uploadPictureByFileUsingPost({ spaceId: props.spaceId }, {}, file)
+  if (props.spaceId) {
+    const { data } = await uploadPictureByFileToSpaceUsingPost({}, { spaceId: props.spaceId }, file)
+    emit('fetchPictureDetail', data as API.PictureDetailVO)
+  } else {
+    const { data } = await uploadPictureByFileToPublicUsingPost({}, {}, file)
+    emit('fetchPictureDetail', data as API.PictureDetailVO)
+  }
   loadingBar.finish()
   message.success('图片上传成功！')
-  emit('fetchPictureDetail', data as API.PictureDetailVO)
 }
 
 // 地址上传
@@ -64,7 +69,7 @@ const handleUrlUpload = async () => {
     return
   }
   loadingBar.start()
-  const { data } = await uploadPictureByUrlUsingPost({ pictureUrl: imageUrl.value })
+  const { data } = await uploadPictureByUrlToPublicUsingPost({ pictureUrl: imageUrl.value })
   loadingBar.finish()
   message.success('图片上传成功！')
   emit('fetchPictureDetail', data as API.PictureDetailVO)

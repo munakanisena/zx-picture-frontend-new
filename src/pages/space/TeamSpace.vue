@@ -185,6 +185,7 @@
         v-if="pictureList?.length > 0"
         :picture-list="pictureList"
         :space-info="teamInfo"
+        :login-user-member="loginUserMember"
         @picture-deleted="handlePictureDeleted"
       />
       <n-card :bordered="false" v-else>
@@ -233,6 +234,7 @@ import { onMounted, reactive, ref } from 'vue'
 import {
   getSpaceDetailBySpaceIdUsingGet,
   getTeamSpaceDetailByLoginUserUsingGet,
+  switchSpaceContextUsingPost,
 } from '@/api/spaceController.ts'
 import { categoryToOptions, formatSize } from '@/utils/util.ts'
 import { type PaginationInfo, useThemeVars } from 'naive-ui'
@@ -251,12 +253,14 @@ import BPictureList from '@/pages/picture/components/BPictureList.vue'
 import { listHomeCategoriesUsingGet } from '@/api/homeController.ts'
 import dayjs from 'dayjs'
 import { useRoute } from 'vue-router'
+import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
+import { getTeamSpaceMembersBySpaceIdUsingGet } from '@/api/spaceUserController.ts'
 
 const teamInfo = ref<API.SpaceTeamDetailVO>()
 const dateRange = ref<[string, string] | null>()
 const pictureList = ref<API.PictureVO[]>()
 const themeVars = useThemeVars()
-
+const loginUserMember = ref<API.SpaceUserVO>()
 const route = useRoute()
 //如果传了ID 就用传递的ID 查询空间。否则就是用户自己的团队空间
 const spaceId = ref(route.query.space_id)
@@ -301,16 +305,34 @@ const onClearRange = () => {
   searchParams.value.endEditTime = undefined
 }
 
+/**
+ * 获取团队空间信息
+ */
 const fetchTeamInfo = async () => {
   if (spaceId.value) {
     const { data } = await getSpaceDetailBySpaceIdUsingGet({ spaceId: spaceId.value })
     teamInfo.value = data
+    await switchSpaceContextUsingPost({ spaceId: teamInfo.value.id })
   } else {
     const { data } = await getTeamSpaceDetailByLoginUserUsingGet()
     teamInfo.value = data
+    await switchSpaceContextUsingPost({ spaceId: teamInfo.value.id })
   }
 }
 
+/**
+ * 获取团队空间列表
+ */
+const fetchSpaceUserVO = async () => {
+  const { data } = await getTeamSpaceMembersBySpaceIdUsingGet({ spaceId: teamInfo.value?.id })
+  loginUserMember.value = data.find(
+    (item) => item.userDetailVO?.id === useLoginUserStore().userInfo.id,
+  )
+}
+
+/**
+ * 获取团队图片分页
+ */
 const fetchTeamPictureList = async () => {
   //构造请求 如果有空间id就传递
   const requestParams = {
@@ -353,6 +375,7 @@ const handlePictureDeleted = () => {
 onMounted(async () => {
   await fetchTeamInfo()
   await fetchTeamPictureList()
+  await fetchSpaceUserVO()
   const { data } = await listHomeCategoriesUsingGet()
   categoryList.value = data
 })

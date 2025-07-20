@@ -16,7 +16,11 @@
       </n-card>
 
       <n-card title="👥 空间成员" :bordered="false" :style="{ borderRadius: '8px' }">
-        <n-space :size="12" style="margin-bottom: 20px; padding: 8px">
+        <n-space
+          v-if="loginUserMember?.spaceRole === SPACE_ROLE_ENUM.ADMIN"
+          :size="12"
+          style="margin-bottom: 20px; padding: 8px"
+        >
           <n-input v-model:value="newMemberId" placeholder="请输入要添加的用户ID" clearable />
           <n-select
             v-model:value="newMemberRole"
@@ -55,10 +59,14 @@
                   :value="member.spaceRole"
                   :options="toOptions(SPACE_ROLE_MAP)"
                   @update:value="(newRoleValue) => handleRoleChange(member.id, newRoleValue)"
-                  :disabled="member.userDetailVO?.id === loginUserId"
+                  :disabled="loginUserMember?.spaceRole !== SPACE_ROLE_ENUM.ADMIN"
                   style="width: 120px"
                 />
-                <n-button @click="handleDeletedMember(member.id as any)" style="width: 120px">
+                <n-button
+                  v-if="loginUserMember?.spaceRole === SPACE_ROLE_ENUM.ADMIN"
+                  @click="handleDeletedMember(member.id as any)"
+                  style="width: 120px"
+                >
                   <template #icon>
                     <n-icon>
                       <RemoveIcon />
@@ -80,7 +88,7 @@ import { onMounted, ref } from 'vue'
 import { getSpaceDetailBySpaceIdUsingGet } from '@/api/spaceController'
 import { formatSize, toOptions } from '@/utils/util.ts'
 import { formatDistanceToNow } from '@/utils/formatDistanceToNow.ts'
-import { SPACE_ROLE_MAP } from '@/constants/space.ts'
+import { SPACE_ROLE_ENUM, SPACE_ROLE_MAP } from '@/constants/space.ts'
 import { useMessage } from 'naive-ui'
 import { Add as AddIcon, TrashOutline as RemoveIcon } from '@vicons/ionicons5'
 import {
@@ -89,8 +97,8 @@ import {
   editSpaceUserUsingPost,
   getTeamSpaceMembersBySpaceIdUsingGet,
 } from '@/api/spaceUserController.ts'
-import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { useRoute } from 'vue-router'
+import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 
 const teamInfo = ref<API.SpaceTeamDetailVO>()
 
@@ -99,7 +107,7 @@ const newMemberId = ref<string>('')
 
 const newMemberRole = ref()
 const message = useMessage()
-const loginUserId = ref()
+const loginUserMember = ref<API.SpaceUserVO>()
 const route = useRoute()
 
 const spaceId = ref(route.params.id)
@@ -107,6 +115,9 @@ const spaceId = ref(route.params.id)
 const fetchSpaceUserVO = async () => {
   const { data } = await getTeamSpaceMembersBySpaceIdUsingGet({ spaceId: spaceId.value })
   teamMembers.value = data ?? []
+  loginUserMember.value = teamMembers.value.find(
+    (item) => item.userDetailVO?.id === useLoginUserStore().userInfo.id,
+  )
 }
 
 const fetchTeamInfo = async () => {
@@ -137,7 +148,7 @@ const handleAddMember = async () => {
 
 // 处理更新角色逻辑
 const handleRoleChange = async (memberId: string, spaceRole: string) => {
-  await editSpaceUserUsingPost({ id: memberId, spaceRole: spaceRole })
+  await editSpaceUserUsingPost({ id: memberId, spaceId: teamInfo.value?.id, spaceRole: spaceRole })
   message.success('角色更新成功')
   await fetchSpaceUserVO()
 }
@@ -148,7 +159,7 @@ const handleDeletedMember = async (spaceUserId: string) => {
     message.error('无法获取成员ID，请刷新页面')
     return
   }
-  await deleteSpaceUserUsingPost({ id: spaceUserId as any })
+  await deleteSpaceUserUsingPost({ id: spaceUserId as any,spaceId: teamInfo.value?.id })
   message.success('移除成员成功')
   await fetchSpaceUserVO()
 }
@@ -156,7 +167,6 @@ const handleDeletedMember = async (spaceUserId: string) => {
 onMounted(() => {
   fetchSpaceUserVO()
   fetchTeamInfo()
-  loginUserId.value = useLoginUserStore().userInfo.id
 })
 </script>
 

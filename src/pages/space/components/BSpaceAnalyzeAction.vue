@@ -1,5 +1,5 @@
 <template>
-  <div style="text-align: center;padding: 24px;">
+  <div style="text-align: center; padding: 24px">
     <n-card title="用户上传数量趋势">
       <n-flex
         justify="space-between"
@@ -15,7 +15,7 @@
           />
         </n-space>
         <div>
-          <n-input-group>
+          <n-input-group v-if="userInfo.role === USER_ROLE_ENUM.ADMIN">
             <n-input
               :style="{ width: '100%' }"
               size="small"
@@ -52,21 +52,21 @@ import { GridComponent, TooltipComponent } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { NCard } from 'naive-ui'
+import { USER_ROLE_ENUM } from '@/constants/user.ts'
 
 use([TooltipComponent, GridComponent, LineChart, CanvasRenderer])
-
-const userId = ref()
 const timeDimension = ref<string>('day')
-
 const chartData = ref<API.SpaceUserAnalyzeResponse[]>()
 const loading = ref(false)
+const userInfo = useLoginUserStore().userInfo
+const userId = ref()
 
 const doSearch = (value: string) => {
   userId.value = value as any
 }
 
 //选中后触发事件
-const handleUpdateValue=()=>{
+const handleUpdateValue = () => {
   fetchCharData()
 }
 
@@ -74,14 +74,13 @@ const fetchCharData = async () => {
   loading.value = true
   const { data } = await analyzeSpaceUserActionUsingPost({
     timeDimension: timeDimension.value,
-    userId: userId.value as any,
+    userId: userInfo.id,
   })
   chartData.value = data
   loading.value = false
 }
 
 onMounted(() => {
-  userId.value = useLoginUserStore().userInfo.id
   fetchCharData()
 })
 

@@ -83,14 +83,18 @@ const pictureEditForm = reactive<API.PictureEditRequest>({
   categoryId: props.pictureDetail?.categoryId,
   tags: props.pictureDetail?.tags,
   picDesc: props.pictureDetail?.picDesc,
+  spaceId: props.pictureDetail?.spaceId,
 })
 
 // 表单提交处理
 const handlePictureEditSubmit = async () => {
   loadingBar.start()
-  await editPictureUsingPost({ ...pictureEditForm })
-  message.success('修改成功')
-  loadingBar.finish()
+  try {
+    await editPictureUsingPost({ ...pictureEditForm })
+    message.success('修改成功')
+  } finally {
+    loadingBar.finish()
+  }
 }
 
 onMounted(async () => {

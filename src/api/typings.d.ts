@@ -205,6 +205,7 @@ declare namespace API {
 
   type DeleteRequest = {
     id?: number
+    spaceId?: number
   }
 
   type EmailRequest = {
@@ -354,6 +355,7 @@ declare namespace API {
     id?: number
     picDesc?: string
     picName?: string
+    spaceId?: number
     tags?: string[]
   }
 
@@ -518,6 +520,11 @@ declare namespace API {
     userId?: number
   }
 
+  type SpaceEditRequest = {
+    id?: number
+    spaceName?: string
+  }
+
   type SpaceQueryRequest = {
     current?: number
     id?: number
@@ -539,6 +546,10 @@ declare namespace API {
   type SpaceSizeAnalyzeResponse = {
     count?: number
     sizeRange?: string
+  }
+
+  type SpaceSwitchRequest = {
+    spaceId?: number
   }
 
   type SpaceTagAnalyzeRequest = {
@@ -609,6 +620,7 @@ declare namespace API {
 
   type SpaceUserEditRequest = {
     id?: number
+    spaceId?: number
     spaceRole?: string
   }
 
@@ -654,7 +666,14 @@ declare namespace API {
     total?: number
   }
 
-  type uploadPictureByFileUsingPOSTParams = {
+  type uploadPictureByFileToPublicUsingPOSTParams = {
+    id?: number
+    pictureName?: string
+    pictureUrl?: string
+    spaceId?: number
+  }
+
+  type uploadPictureByFileToSpaceUsingPOSTParams = {
     id?: number
     pictureName?: string
     pictureUrl?: string
