@@ -46,7 +46,7 @@ const router = createRouter({
           component: () => import('../pages/user/UserProfile.vue'),
         },
         {
-          path: '/user-edit/:id',
+          path: '/user-edit',
           name: 'user-edit',
           meta: { title: '编辑资料' },
           component: () => import('../pages/user/UserEdit.vue'),
@@ -65,21 +65,29 @@ const router = createRouter({
           component: () => import('../pages/picture/PictureUploadBatch.vue'),
         },
         {
-          path: '/picture/detail/:id',
+          path: '/picture/detail/:pictureId',
           name: 'picture-detail',
           meta: { title: '图片详情' },
+          props: true,
           component: () => import('../pages/picture/PictureDetail.vue'),
         },
         {
-          path: '/picture-edit/:id',
+          path: '/picture-edit/:pictureId',
           name: 'picture-edit',
           meta: { title: '编辑图片' },
+          props: (route)=>({
+              pictureId :route.params.pictureId,
+              spaceId:route.query.space_id,
+              spaceName:route.query.space_name,
+              spaceType:route.query.space_type
+          }),
           component: () => import('../pages/picture/PictureEdit.vue'),
         },
         {
-          path: '/picture-ai/extend/:id',
+          path: '/picture-ai/extend/:pictureId',
           name: 'picture-ai-extend',
           meta: { title: 'AI扩图' },
+          props: true,
           component: () => import('../pages/picture/PictureAIExtend.vue'),
         },
         {
@@ -158,9 +166,10 @@ const router = createRouter({
           component: () => import('../pages/space/TeamSpaceJoin.vue'),
         },
         {
-          path: '/space/team/member/:id',
+          path: '/space/team/member/:spaceId',
           name: 'space-team-member',
           meta: { title: '团队成员' },
+          props: true,
           component: () => import('../pages/space/TeamSpaceMember.vue'),
         },
         {

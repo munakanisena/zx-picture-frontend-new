@@ -1,27 +1,26 @@
 <template>
-    <n-flex style="width: 90%; margin: 0 auto; padding: 24px" align="center" vertical>
-      <h1>图片AI扩展</h1>
-      <n-spin :show="show">
-        <n-card embedded>
-          <template #cover>
-            <n-image
-              style="max-height: 700px; min-height: 400px; min-width: 380px; max-width: 700px"
-              object-fit="contain"
-              :src="expandPicUrl"
-            ></n-image>
-          </template>
-        </n-card>
-        <div style="margin-top: 16px"></div>
-        <n-button style="width: 100%; margin: 0 auto" type="info" block @click="clickDownload"
-          >下载
-        </n-button>
-        <template #description> 扩图任务执行中，请耐心等待不要刷新页面...</template>
-      </n-spin>
-    </n-flex>
+  <n-flex style="width: 90%; margin: 0 auto; padding: 24px" align="center" vertical>
+    <h1>图片AI扩展</h1>
+    <n-spin :show="show">
+      <n-card embedded>
+        <template #cover>
+          <n-image
+            style="max-height: 700px; min-height: 400px; min-width: 380px; max-width: 700px"
+            object-fit="contain"
+            :src="expandPicUrl"
+          ></n-image>
+        </template>
+      </n-card>
+      <div style="margin-top: 16px"></div>
+      <n-button style="width: 100%; margin: 0 auto" type="info" block @click="clickDownload"
+        >下载
+      </n-button>
+      <template #description> 扩图任务执行中，请耐心等待不要刷新页面...</template>
+    </n-spin>
+  </n-flex>
 </template>
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
 import {
   createPictureExtendTaskUsingPost,
   queryPictureExtendTaskUsingGet,
@@ -29,9 +28,8 @@ import {
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 
 const show = ref<boolean>(false)
-const route = useRoute()
+const { pictureId } = defineProps<{ pictureId: string }>()
 const message = useMessage()
-// 扩图相关状态
 // 扩图结果
 const expandPicUrl = ref<string>('')
 const taskId = ref<string>('')
@@ -49,11 +47,10 @@ const clearPolling = () => {
 
 // 执行扩图
 const doExpandPicture = async () => {
-  const pictureId = route.params.id
   try {
     show.value = true
     const { data } = await createPictureExtendTaskUsingPost({
-      pictureId: pictureId,
+      pictureId: pictureId as any,
       parameters: {
         xScale: 2,
         yScale: 2,

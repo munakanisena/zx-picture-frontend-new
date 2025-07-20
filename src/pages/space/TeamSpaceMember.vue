@@ -97,23 +97,18 @@ import {
   editSpaceUserUsingPost,
   getTeamSpaceMembersBySpaceIdUsingGet,
 } from '@/api/spaceUserController.ts'
-import { useRoute } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 
 const teamInfo = ref<API.SpaceTeamDetailVO>()
-
 const teamMembers = ref<API.SpaceUserVO[]>([])
 const newMemberId = ref<string>('')
-
 const newMemberRole = ref()
 const message = useMessage()
 const loginUserMember = ref<API.SpaceUserVO>()
-const route = useRoute()
-
-const spaceId = ref(route.params.id)
+const { spaceId } = defineProps<{ spaceId: string }>()
 
 const fetchSpaceUserVO = async () => {
-  const { data } = await getTeamSpaceMembersBySpaceIdUsingGet({ spaceId: spaceId.value })
+  const { data } = await getTeamSpaceMembersBySpaceIdUsingGet({ spaceId: spaceId as any })
   teamMembers.value = data ?? []
   loginUserMember.value = teamMembers.value.find(
     (item) => item.userDetailVO?.id === useLoginUserStore().userInfo.id,
@@ -121,7 +116,7 @@ const fetchSpaceUserVO = async () => {
 }
 
 const fetchTeamInfo = async () => {
-  const { data } = await getSpaceDetailBySpaceIdUsingGet({ spaceId: spaceId.value })
+  const { data } = await getSpaceDetailBySpaceIdUsingGet({ spaceId: spaceId as any })
   teamInfo.value = data ?? {}
 }
 
@@ -159,7 +154,7 @@ const handleDeletedMember = async (spaceUserId: string) => {
     message.error('无法获取成员ID，请刷新页面')
     return
   }
-  await deleteSpaceUserUsingPost({ id: spaceUserId as any,spaceId: teamInfo.value?.id })
+  await deleteSpaceUserUsingPost({ id: spaceUserId as any, spaceId: teamInfo.value?.id })
   message.success('移除成员成功')
   await fetchSpaceUserVO()
 }

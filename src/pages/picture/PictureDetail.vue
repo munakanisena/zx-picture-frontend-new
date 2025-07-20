@@ -67,7 +67,6 @@
   <BPictureShare ref="pictureShareRef" :link="shareLink" />
 </template>
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref, useTemplateRef } from 'vue'
 import {
   getPictureDetailByIdUsingGet,
@@ -89,17 +88,14 @@ import { PIC_INTERACTION_STATUS_ENUM, PIC_INTERACTION_TYPE_ENUM } from '@/consta
 import BPictureShare from '@/pages/picture/components/BPictureShare.vue'
 
 const shareLink = ref<string>()
-const route = useRoute()
-const router = useRouter()
-
 const pictureDetail = ref<API.PictureDetailVO>()
-
+const { pictureId } = defineProps<{ pictureId: string }>()
 const message = useMessage()
 const loading = ref<boolean>(false)
 const pictureShareRef = useTemplateRef('pictureShareRef')
 
 const fetchPictureDetail = async () => {
-  const { data } = await getPictureDetailByIdUsingGet({ pictureId: route.params.id })
+  const { data } = await getPictureDetailByIdUsingGet({ pictureId: pictureId })
   pictureDetail.value = data
 }
 
@@ -209,6 +205,5 @@ const clickShare = (pictureHomeVO: API.PictureHomeVO) => {
   shareLink.value = `${window.location.protocol}//${window.location.host}/picture/detail/${pictureHomeVO.id}`
   pictureShareRef.value?.openModal()
 }
-
 </script>
 <style scoped></style>

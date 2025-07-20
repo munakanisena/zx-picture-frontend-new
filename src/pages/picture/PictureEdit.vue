@@ -91,23 +91,25 @@ import {
   uploadPictureByFileToPublicUsingPost,
   uploadPictureByFileToSpaceUsingPost,
 } from '@/api/pictureController.ts'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
-const route = useRoute()
+const { pictureId, spaceId, spaceName, spaceType } = defineProps<{
+  pictureId: string
+  spaceId?: string
+  spaceName?: string
+  spaceType?: string
+}>()
 const router = useRouter()
 const message = useMessage()
 const pictureDetail = ref<API.PictureDetailVO>()
 const imageCropper = useTemplateRef('picture-cropper')
 const loadingBar = useLoadingBar()
-const spaceId = ref()
-const spaceName = ref()
-const spaceType = ref()
 
 //裁剪后上传
 const handleUploadCrop = async (file: File) => {
   loadingBar.start()
-  if (spaceId.value) {
-    const { data } = await uploadPictureByFileToSpaceUsingPost({}, { spaceId: spaceId.value }, file)
+  if (spaceId) {
+    const { data } = await uploadPictureByFileToSpaceUsingPost({}, { spaceId: spaceId }, file)
     pictureDetail.value = data as API.PictureDetailVO
   } else {
     const { data } = await uploadPictureByFileToPublicUsingPost({}, {}, file)
@@ -123,11 +125,8 @@ const fetchPictureDetail = (pictureInfo: API.PictureDetailVO) => {
 }
 
 onMounted(async () => {
-  const { data } = await getPictureDetailByIdUsingGet({ pictureId: route.params.id as number })
+  const { data } = await getPictureDetailByIdUsingGet({ pictureId: pictureId })
   pictureDetail.value = data
-  spaceId.value = (route.query.space_id as string) || undefined
-  spaceName.value = (route.query.space_name as string) || undefined
-  spaceType.value = (route.query.space_type as string) || undefined
 })
 </script>
 

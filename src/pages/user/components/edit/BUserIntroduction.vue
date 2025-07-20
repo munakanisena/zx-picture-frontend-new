@@ -24,18 +24,17 @@
 import { ref } from 'vue'
 import { editUserInfoUsingPost } from '@/api/userController.ts'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
-import { useRoute } from 'vue-router'
 
 const message = useMessage()
-const route = useRoute()
 
 const introduction = ref<string>()
 const editIntroduction = async () => {
   if (!introduction.value) {
+    message.warning('请输入个人简介')
     return
   }
   await editUserInfoUsingPost({
-    id: route.params.id,
+    id: useLoginUserStore().userInfo.id,
     introduction: introduction.value,
   })
   await useLoginUserStore().refreshUser()
