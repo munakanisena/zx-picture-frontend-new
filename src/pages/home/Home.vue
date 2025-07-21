@@ -7,7 +7,6 @@
     <BWaterfall :pictureList="pictureList" :scroll-container="scrollContainerRef" />
   </div>
   <n-back-top :bottom="64" :right="48" >
-
   </n-back-top>
   <n-divider v-if="!hasMoreData && pictureList.length > 0"> 没有更多内容了</n-divider>
 </template>
@@ -24,7 +23,6 @@ const isLoading = ref(false)
 //用于停止无限滚动
 const hasMoreData = ref(true)
 const pictureList = ref<API.PictureHomeVO[]>([])
-const loadingBar = useLoadingBar()
 const scrollContainerRef = ref<HTMLElement | null>(null)
 
 const searchParma = ref<API.PictureQueryRequest>({
@@ -52,8 +50,9 @@ const handleCategoryChange = (categoryId: number) => {
   fetchHomePictureList()
 }
 
-// 统一请求图片数据（使用 try...finally 优化）
+// 统一请求图片数据
 const fetchHomePictureList = async () => {
+  //此时正在加载中。取消本次请求
   if (isLoading.value || !hasMoreData.value) {
     return
   }

@@ -6,7 +6,7 @@
         :bordered="false"
         :style="{ borderRadius: '8px', height: '100%' }"
       >
-        <n-list v-if="spaceTeamList?.length > 0" hoverable clickable>
+        <n-list v-if="spaceTeamList?.length > 0" hoverable clickable bordered>
           <n-list-item v-for="team in spaceTeamList" :key="team.id">
             <n-thing
               :title="'空间名称: ' + team.spaceName"

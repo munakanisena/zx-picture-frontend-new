@@ -18,9 +18,8 @@
           <n-input-group v-if="userInfo.role === USER_ROLE_ENUM.ADMIN">
             <n-input
               :style="{ width: '100%' }"
-              size="small"
               v-model:value="userId"
-              placeholder="请输入用户id"
+              placeholder="请输入用户id(默认登录id)"
             />
             <n-button type="primary" @click="doSearch" ghost> 搜索</n-button>
           </n-input-group>
@@ -59,10 +58,11 @@ const timeDimension = ref<string>('day')
 const chartData = ref<API.SpaceUserAnalyzeResponse[]>()
 const loading = ref(false)
 const userInfo = useLoginUserStore().userInfo
-const userId = ref()
+//默认是登录用户的id
+const userId = ref(userInfo.id)
 
-const doSearch = (value: string) => {
-  userId.value = value as any
+const doSearch = () => {
+  fetchCharData()
 }
 
 //选中后触发事件
@@ -74,7 +74,7 @@ const fetchCharData = async () => {
   loading.value = true
   const { data } = await analyzeSpaceUserActionUsingPost({
     timeDimension: timeDimension.value,
-    userId: userInfo.id,
+    userId: userId.value,
   })
   chartData.value = data
   loading.value = false

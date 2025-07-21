@@ -25,10 +25,10 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { h } from 'vue'
 import { useRouter } from 'vue-router'
-import { PencilOutline as EditIcon, CheckmarkOutline as UploadIcon } from '@vicons/ionicons5'
-import type { Component } from 'vue'
+import { CheckmarkOutline as UploadIcon, PencilOutline as EditIcon } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 
@@ -39,8 +39,9 @@ const handleEdit = () => {
   router.push({ name: 'user-edit', params: { id: userStore.userInfo.id } })
 }
 
-//todo上传图片页面还没做好
-const handleUpload = () => {}
+const handleUpload = () => {
+  router.push({ name: 'picture-upload' })
+}
 
 const renderIcon = (icon: Component) => () => h(NIcon, null, { default: () => h(icon) })
 </script>

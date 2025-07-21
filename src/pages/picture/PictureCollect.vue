@@ -62,41 +62,65 @@
         responsive="screen"
       >
         <n-gi span="1" v-for="pictureHomeVO in collectPictureList" :key="pictureHomeVO.id">
-          <n-card
-            style="
-              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-              width: 100%;
-              height: 350px;
-              text-align: center;
-            "
-            :title="pictureHomeVO.picName"
-            hoverable
-            embedded
-            content-style="padding: 0"
-          >
+          <n-card style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)"  embedded>
             <template #cover>
-              <div @click="doClickPicture(pictureHomeVO.id as number)">
-                <n-image lazy :src="pictureHomeVO.compressUrl" object-fit="contain"></n-image>
+              <div
+                style="height: 300px; overflow: hidden; cursor: pointer"
+                @click="doClickPicture(pictureHomeVO.id as number)"
+              >
+                <!--占满整个容器-->
+                <n-image
+                  style="height: 100%; width: 100%"
+                  preview-disabled
+                  lazy
+                  :src="pictureHomeVO.compressUrl"
+                  object-fit="cover"
+                />
               </div>
             </template>
-            <n-button-group size="small" style="height: 50px; width: 100%; display: flex">
-              <n-button @click="cancelCollect(pictureHomeVO)" style="flex: 1; height: 50px">
-                <template #icon>
-                  <n-icon>
-                    <HeartOutline />
-                  </n-icon>
-                </template>
-                取消收藏
-              </n-button>
-              <n-button @click="shareAction(pictureHomeVO)" style="flex: 1; height: 50px">
-                <template #icon>
-                  <n-icon>
-                    <ShareSocialOutline />
-                  </n-icon>
-                </template>
-                分享
-              </n-button>
-            </n-button-group>
+            <!--占位-->
+            <n-card
+              style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)"
+              hoverable
+              content-style="padding: 0"
+            >
+            </n-card>
+            <template #footer>
+              <n-flex justify="space-between" align="center">
+                <span
+                  style="
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 60%;
+                  "
+                >
+                  {{ pictureHomeVO.picName }}
+                </span>
+                <n-space>
+                  <n-button
+                    text
+                    style="font-size: 20px"
+                    @click="cancelCollect(pictureHomeVO)"
+                    title="取消收藏"
+                  >
+                    <n-icon>
+                      <HeartOutline />
+                    </n-icon>
+                  </n-button>
+                  <n-button
+                    text
+                    style="font-size: 20px"
+                    @click="shareAction(pictureHomeVO)"
+                    title="分享"
+                  >
+                    <n-icon>
+                      <ShareSocialOutline />
+                    </n-icon>
+                  </n-button>
+                </n-space>
+              </n-flex>
+            </template>
           </n-card>
         </n-gi>
       </n-grid>
@@ -225,7 +249,7 @@ const shareAction = (pictureHomeVO: API.PictureHomeVO) => {
 
 //跳转图片详情
 const doClickPicture = (pictureId: number) => {
-  router.push({ name: 'picture-detail', params: { id: pictureId } })
+  router.push({ name: 'picture-detail', params: { pictureId: pictureId } })
 }
 
 onMounted(() => {

@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, reactive, ref, useTemplateRef } from 'vue'
+import { h, nextTick, onMounted, reactive, ref, useTemplateRef } from 'vue'
 import {
   type DataTableColumns,
   NButton,
@@ -91,6 +91,7 @@ import { deleteUserUsingPost, getUserPageListAsManageUsingPost } from '@/api/use
 import BUserUpdateModal from '@/pages/admin/components/BUserUpdateModal.vue'
 import { toOptions } from '@/utils/util.ts'
 import { USER_ROLE_MAP, USER_STATE_MAP, USER_VIP_MAP } from '@/constants/user.ts'
+import dayjs from 'dayjs'
 
 const message = useMessage()
 const loading = ref(false)
@@ -108,7 +109,7 @@ const initialSearchParams: API.UserQueryRequest = {
 }
 
 // 初始化
-const searchParams = ref<API.UserQueryRequest>({...initialSearchParams})
+const searchParams = ref<API.UserQueryRequest>({ ...initialSearchParams })
 
 // 分页配置
 const pagination = reactive({
@@ -141,6 +142,8 @@ const currentUser = ref<API.UserVO>()
 // 编辑用户
 const handleEdit = async (userVO: API.UserVO) => {
   currentUser.value = userVO
+  //等待组件挂载完毕
+  await nextTick()
   userUpdateModalRef.value?.openUpdateModal()
 }
 
@@ -252,6 +255,22 @@ const columns: DataTableColumns<API.UserVO> = [
         },
         { default: () => USER_STATE_MAP[row.isDisabled as number] },
       )
+    },
+  },
+  {
+    title: '创建时间',
+    align: 'center',
+    key: 'createTime',
+    render(row) {
+      return dayjs(row.createTime).format('YYYY-MM-DD HH:mm:ss')
+    },
+  },
+  {
+    title: '编辑时间',
+    align: 'center',
+    key: 'editTime',
+    render(row) {
+      return dayjs(row.editTime).format('YYYY-MM-DD HH:mm:ss')
     },
   },
   {

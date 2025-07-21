@@ -27,10 +27,8 @@ import LoginForm from '@/pages/auth/components/LoginForm.vue'
 import RegisterForm from '@/pages/auth/components/RegisterForm.vue'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { watch } from 'vue'
-//登录后需要跳转的 地址 通过路由获得
-const props = defineProps<{ from?: string }>()
+const { from } = defineProps<{ from?: string }>()
 const router = useRouter()
-
 const userStore = useLoginUserStore()
 
 // 监听登录状态
@@ -38,7 +36,6 @@ watch(
   () => userStore.isLogin,
   () => {
     if (userStore.isLogin) {
-      const from = props.from
       if (from) {
         router.replace(from)
       } else {

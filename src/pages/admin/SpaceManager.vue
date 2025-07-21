@@ -8,6 +8,9 @@
             @click="
               $router.push({
                 name: 'analyze-analyze',
+                params: {
+                  spaceId: 0,
+                },
                 query: {
                   queryAll: 1,
                 },
@@ -25,6 +28,9 @@
             @click="
               $router.push({
                 name: 'analyze-analyze',
+                params: {
+                  spaceId: 0,
+                },
                 query: {
                   queryPublic: 1,
                 },
@@ -132,11 +138,13 @@ import { toOptions } from '@/utils/util.ts'
 import { SPACE_LEVEL_MAP, SPACE_TYPE_MAP } from '@/constants/space.ts'
 import { deleteSpaceUsingPost, getSpacePageListAsManageUsingPost } from '@/api/spaceController.ts'
 import BSpaceUpdateModal from '@/pages/admin/components/BSpaceUpdateModal.vue'
+import { useRouter } from 'vue-router'
 
 const message = useMessage()
 const loading = ref(false)
 const spaceVOList = ref<API.SpaceVO[]>()
 const loadingBar = useLoadingBar()
+const router = useRouter()
 const spaceUpdateModal = useTemplateRef('space-update-modal')
 
 // 定义搜索参数的初始状态
@@ -198,8 +206,10 @@ const clickDelete = async (SpaceId: number) => {
 
 const currentSpace = ref<API.SpaceVO>()
 //编辑空间
-const editSpace = (space: API.SpaceVO) => {
+const editSpace = async (space: API.SpaceVO) => {
   currentSpace.value = space
+  //等待组件挂载完毕
+  await nextTick()
   spaceUpdateModal.value?.openUpdateModal()
 }
 
@@ -223,6 +233,10 @@ const columns: DataTableColumns<API.SpaceVO> = [
   {
     title: '空间名称',
     key: 'spaceName',
+  },
+  {
+    title: '用户id',
+    key: 'userId',
   },
   {
     title: '空间级别',
@@ -269,6 +283,23 @@ const columns: DataTableColumns<API.SpaceVO> = [
         {},
         {
           default: () => [
+            h(
+              NButton,
+              {
+                size: 'small',
+                type: 'info',
+                secondary: true,
+                onClick: () => {
+                  router.push({
+                    name: 'analyze-analyze',
+                    params: {
+                      spaceId: row?.id,
+                    },
+                  })
+                },
+              },
+              { default: () => '空间分析' },
+            ),
             h(
               NButton,
               {

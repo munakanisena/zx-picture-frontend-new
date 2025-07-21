@@ -184,13 +184,7 @@ const handleUserDropdownSelect = async (key: string | number) => {
 
 //侧边栏选中
 const menuKey = computed(() => {
-  const path = route.path
-  for (const key of ['/favorite', '/analyze', '/user-profile']) {
-    if (path.startsWith(key)) {
-      return key
-    }
-    return path
-  }
+  return route.path
 })
 
 //侧边栏菜单 动态
@@ -213,7 +207,7 @@ const menuOptions = computed<MenuOption[]>(() => {
           icon: renderIcon(UserIcon),
         },
         {
-          key: '/user/picture-upload',
+          key: '/picture-upload',
           label: renderLabel('上传图片', '/picture-upload'),
           icon: renderIcon(UploadIcon),
         },
@@ -223,8 +217,8 @@ const menuOptions = computed<MenuOption[]>(() => {
           icon: renderIcon(BugIcon),
         },
         {
-          key: `/user-edit/${userInfo.value.id}`,
-          label: renderLabel('用户设置', `/user-edit/${userInfo.value.id}`),
+          key: '/user-edit',
+          label: renderLabel('用户设置', `/user-edit`),
           icon: renderIcon(SettingIcon),
         },
         {

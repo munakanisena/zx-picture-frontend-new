@@ -17,7 +17,7 @@
         </n-flex>
         <n-flex align="center">
           <IntroduceIcon style="height: 16px; width: 16px" />
-          {{ userInfo.introduction }}
+          {{ userInfo.introduction || '你还没有设置签名哟' }}
         </n-flex>
       </n-flex>
       <n-divider />

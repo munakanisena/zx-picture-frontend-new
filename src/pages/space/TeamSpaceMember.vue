@@ -38,7 +38,7 @@
           </n-button>
         </n-space>
 
-        <n-list hoverable clickable>
+        <n-list hoverable clickable bordered>
           <n-list-item v-for="member in teamMembers" :key="member.id">
             <template #prefix>
               <n-avatar

@@ -75,11 +75,11 @@ const router = createRouter({
           path: '/picture-edit/:pictureId',
           name: 'picture-edit',
           meta: { title: '编辑图片' },
-          props: (route)=>({
-              pictureId :route.params.pictureId,
-              spaceId:route.query.space_id,
-              spaceName:route.query.space_name,
-              spaceType:route.query.space_type
+          props: (route) => ({
+            pictureId: route.params.pictureId,
+            spaceId: route.query.space_id,
+            spaceName: route.query.space_name,
+            spaceType: route.query.space_type,
           }),
           component: () => import('../pages/picture/PictureEdit.vue'),
         },
@@ -114,6 +114,10 @@ const router = createRouter({
           path: '/space-active',
           name: 'space-active',
           meta: { title: '激活空间' },
+          props: (route) => ({
+            type: route.query.type,
+            from: route.query.from,
+          }),
           component: () => import('../pages/space/SpaceActive.vue'),
         },
         {
@@ -125,13 +129,19 @@ const router = createRouter({
             try {
               const { data } = await getPrivateSpaceDetailByLoginUserUsingGet()
               if (data == null) {
-                next({ name: 'space-active', query: { type: SPACE_TYPE_ENUM.PRIVATE } })
+                next({
+                  name: 'space-active',
+                  query: { type: SPACE_TYPE_ENUM.PRIVATE, from: '/space/person' },
+                })
               } else {
                 next()
               }
             } catch (error) {
               console.error('获取团队空间详情失败:', error)
-              next({ name: 'space-active', query: { type: SPACE_TYPE_ENUM.PRIVATE } })
+              next({
+                name: 'space-active',
+                query: { type: SPACE_TYPE_ENUM.PRIVATE, from: '/space/person' },
+              })
             }
           },
         },
@@ -149,13 +159,19 @@ const router = createRouter({
               }
               const { data } = await getTeamSpaceDetailByLoginUserUsingGet()
               if (data == null) {
-                next({ name: 'space-active', query: { type: SPACE_TYPE_ENUM.TEAM } })
+                next({
+                  name: 'space-active',
+                  query: { type: SPACE_TYPE_ENUM.TEAM, from: '/space/team' },
+                })
               } else {
                 next()
               }
             } catch (error) {
               console.error('获取团队空间详情失败:', error)
-              next({ name: 'space-active', query: { type: SPACE_TYPE_ENUM.TEAM } })
+              next({
+                name: 'space-active',
+                query: { type: SPACE_TYPE_ENUM.TEAM, from: '/space/team' },
+              })
             }
           },
         },
@@ -173,9 +189,14 @@ const router = createRouter({
           component: () => import('../pages/space/TeamSpaceMember.vue'),
         },
         {
-          path: '/admin/analyze-analyze',
+          path: '/admin/analyze-analyze/:spaceId',
           name: 'analyze-analyze',
           meta: { title: '空间分析' },
+          props: (route) => ({
+            spaceId: route.params.spaceId,
+            queryAll: Number(route.query.queryAll),
+            queryPublic: Number(route.query.queryPublic),
+          }),
           component: () => import('../pages/space/SpaceAnalyze.vue'),
         },
 

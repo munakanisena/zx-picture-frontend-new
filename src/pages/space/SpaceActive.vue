@@ -29,19 +29,20 @@
 import { activeSpaceUsingPost } from '@/api/spaceController.ts'
 import { computed, onMounted, ref } from 'vue'
 import { SPACE_LEVEL_ENUM, SPACE_LEVEL_LIST, SPACE_TYPE_ENUM } from '@/constants/space.ts'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { formatSize } from '@/utils/util.ts'
 
+const { type, from } = defineProps<{ type: number; from: string }>()
+
 const spaceName = ref<string>()
 const router = useRouter()
-const route = useRoute()
 const message = useMessage()
 
 // 空间类别 否则默认私有空间
 const spaceType = computed(() => {
-  if (route.query?.type) {
-    return Number(route.query.type)
+  if (type) {
+    return Number(type)
   }
   return SPACE_TYPE_ENUM.PRIVATE
 })
@@ -55,7 +56,11 @@ const activateSpace = async () => {
   })
   if (data) {
     message.success('空间激活成功')
-    await router.replace('/space/person')
+    if (from) {
+      await router.replace(from)
+    } else {
+      await router.replace('/')
+    }
   }
 }
 

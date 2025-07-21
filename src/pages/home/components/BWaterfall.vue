@@ -16,8 +16,14 @@
         content-style="padding: 0"
       >
         <template #cover>
-          <div @click="doClickPicture(item.id as number)">
-            <n-image lazy :src="item.compressUrl" object-fit="contain"></n-image>
+          <div style="overflow: hidden; cursor: pointer" @click="doClickPicture(item.id as number)">
+            <n-image
+              preview-disabled
+              style="width: 100%; height: 100%"
+              lazy
+              :src="item.compressUrl"
+              object-fit="cover"
+            />
           </div>
         </template>
         <template #header-extra>
@@ -76,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, useTemplateRef, watch } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 import { useMessage } from 'naive-ui'
 import MasonryWall from '@yeger/vue-masonry-wall'
 import {
@@ -105,25 +111,10 @@ const props = withDefaults(defineProps<Props>(), {
   scrollContainer: null,
 })
 
-const pictureList = ref<API.PictureHomeVO[]>([])
+const pictureList = computed(() => props.pictureList || [])
 const shareLink = ref<string>()
 const pictureShareRef = useTemplateRef('pictureShareRef')
 const router = useRouter()
-
-watch(
-  () => props.pictureList,
-  (newVal) => {
-    if (newVal) {
-      pictureList.value = newVal
-    }
-  },
-)
-
-onMounted(() => {
-  if (props.pictureList) {
-    pictureList.value = props.pictureList
-  }
-})
 
 //状态维护 避免多次点击
 const actioLike = ref(true)
@@ -209,7 +200,7 @@ const shareAction = (pictureHomeVO: API.PictureHomeVO) => {
 
 //跳转图片详情
 const doClickPicture = (pictureId: number) => {
-  router.push({ name: 'picture-detail', params: { id: pictureId } })
+  router.push({ name: 'picture-detail', params: { pictureId: pictureId } })
 }
 </script>
 

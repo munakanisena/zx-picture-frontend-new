@@ -9,8 +9,8 @@
             @click="
               $router.push({
                 name: 'analyze-analyze',
-                query: {
-                  space_id: spaceInfo?.id,
+                params: {
+                  spaceId: spaceInfo?.id,
                 },
               })
             "

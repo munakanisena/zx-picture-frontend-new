@@ -9,7 +9,7 @@
             @click="
               $router.push({
                 name: 'space-team-member',
-                params: { id: teamInfo?.id },
+                params: { spaceId: teamInfo?.id },
               })
             "
             type="info"
@@ -24,8 +24,8 @@
             @click="
               $router.push({
                 name: 'analyze-analyze',
-                query: {
-                  space_id: teamInfo?.id,
+                params: {
+                  spaceId: teamInfo?.id,
                 },
               })
             "

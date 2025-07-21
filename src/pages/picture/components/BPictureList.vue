@@ -1,57 +1,67 @@
 <template>
   <n-grid :x-gap="12" :y-gap="12" cols="1 s:2 m:3 l:4 xl:5 " responsive="screen">
     <n-gi span="1" v-for="pictureVO in pictureList" :key="pictureVO.id">
-      <n-card
-        style="
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          width: 100%;
-          height: 350px;
-          text-align: center;
-        "
-        :title="pictureVO.picName"
-        hoverable
-        embedded
-        content-style="padding: 0"
-      >
+      <n-card style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)"  embedded>
         <template #cover>
-          <div @click="doClickPicture(pictureVO.id as number)">
-            <n-image lazy :src="pictureVO.compressUrl" object-fit="contain"></n-image>
+          <div
+            style="height: 300px; cursor: pointer; overflow: hidden"
+            @click="doClickPicture(pictureVO.id as number)"
+          >
+            <!--占满整个容器-->
+            <n-image
+              style="width: 100%; height: 100%"
+              preview-disabled
+              lazy
+              :src="pictureVO.compressUrl"
+              object-fit="cover"
+            />
           </div>
         </template>
-        <n-button-group size="small" style="height: 50px; width: 100%; display: flex">
-          <n-button
-            v-if="loginUserMember?.spaceRole !== SPACE_ROLE_ENUM.VIEWER"
-            @click="doEditPicture(pictureVO)"
-            style="flex: 1; height: 50px"
-          >
-            <template #icon>
-              <n-icon>
-                <BuildOutline />
-              </n-icon>
-            </template>
-            编辑
-          </n-button>
-          <n-button
-            v-if="loginUserMember?.spaceRole !== SPACE_ROLE_ENUM.VIEWER"
-            @click="doClickDelete(pictureVO.id as number)"
-            style="flex: 1; height: 50px"
-          >
-            <template #icon>
-              <n-icon>
-                <TrashOutline />
-              </n-icon>
-            </template>
-            删除
-          </n-button>
-          <n-button @click="shareAction(pictureVO)" style="flex: 1; height: 50px">
-            <template #icon>
-              <n-icon>
-                <ShareSocialOutline />
-              </n-icon>
-            </template>
-            分享
-          </n-button>
-        </n-button-group>
+        <!--占位-->
+        <n-card
+          style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)"
+          hoverable
+          content-style="padding: 0"
+        >
+        </n-card>
+        <template #footer>
+          <n-flex justify="space-between" align="center">
+            <span
+              style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 50%"
+            >
+              {{ pictureVO.picName }}
+            </span>
+            <n-space>
+              <n-button
+                v-if="loginUserMember?.spaceRole !== SPACE_ROLE_ENUM.VIEWER"
+                text
+                style="font-size: 20px"
+                @click="doEditPicture(pictureVO)"
+                title="编辑"
+              >
+                <n-icon>
+                  <BuildOutline />
+                </n-icon>
+              </n-button>
+              <n-button
+                v-if="loginUserMember?.spaceRole !== SPACE_ROLE_ENUM.VIEWER"
+                text
+                style="font-size: 20px"
+                title="删除"
+                @click="doClickDelete(pictureVO.id as number)"
+              >
+                <n-icon>
+                  <TrashOutline />
+                </n-icon>
+              </n-button>
+              <n-button text style="font-size: 20px" @click="shareAction(pictureVO)" title="分享">
+                <n-icon>
+                  <ShareSocialOutline />
+                </n-icon>
+              </n-button>
+            </n-space>
+          </n-flex>
+        </template>
       </n-card>
     </n-gi>
   </n-grid>
@@ -83,7 +93,7 @@ const message = useMessage()
 const doEditPicture = (pictureVO: API.PictureVO) => {
   router.push({
     name: 'picture-edit',
-    params: { id: pictureVO.id },
+    params: { pictureId: pictureVO.id },
     query: {
       space_id: props.spaceInfo?.id,
       space_name: props.spaceInfo?.spaceName,
@@ -100,7 +110,7 @@ const shareAction = (pictureVO: API.PictureVO) => {
 
 //跳转图片详情
 const doClickPicture = (pictureId: number) => {
-  router.push({ name: 'picture-detail', params: { id: pictureId } })
+  router.push({ name: 'picture-detail', params: { pictureId: pictureId } })
 }
 
 //删除图片

@@ -3,8 +3,8 @@
     <n-flex justify="space-between" align="center">
       <n-h1>图片管理</n-h1>
       <n-button type="info" size="large" @click="$router.push({ name: 'picture-capture' })"
-        >抓取图片</n-button
-      >
+        >抓取图片
+      </n-button>
     </n-flex>
     <n-divider />
     <!--搜索栏-->
@@ -220,7 +220,7 @@ const clickDelete = async (pictureId: number) => {
 
 //编辑
 const editPicture = (pictureVO: API.PictureVO) => {
-  router.push({ name: 'picture-edit', params: { id: pictureVO.id } })
+  router.push({ name: 'picture-edit', params: { pictureId: pictureVO.id } })
 }
 
 const reviewPicture = async (pictureVO: API.PictureVO, reviewStatus: number) => {
@@ -242,7 +242,6 @@ const handleResetSearchParma = async () => {
   pagination.page = 1
   await fetchPictureList()
 }
-
 
 onMounted(() => {
   fetchPictureList()
@@ -294,6 +293,7 @@ const columns: DataTableColumns<API.PictureVO> = [
           {
             style: {
               marginRight: '6px',
+              marginBottom: '6px',
             },
             type: 'info',
             bordered: false,
@@ -311,6 +311,22 @@ const columns: DataTableColumns<API.PictureVO> = [
     key: 'reviewStatus',
     render(row) {
       return PIC_REVIEW_STATUS_MAP[row.reviewStatus as number]
+    },
+  },
+  {
+    title: '上传时间',
+    align: 'center',
+    key: 'createTime',
+    render(row) {
+      return dayjs(row.createTime).format('YYYY-MM-DD HH:mm:ss')
+    },
+  },
+  {
+    title: '编辑时间',
+    align: 'center',
+    key: 'editTime',
+    render(row) {
+      return dayjs(row.editTime).format('YYYY-MM-DD HH:mm:ss')
     },
   },
   {
