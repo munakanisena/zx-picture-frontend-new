@@ -65,7 +65,9 @@
 import { onMounted, reactive, ref, useTemplateRef } from 'vue'
 import { listHomeCategoriesUsingGet } from '@/api/homeController.js'
 import { categoryToOptions } from '@/utils/util.js'
-import { editPictureUsingPost } from '@/api/pictureController.ts'
+import { editPictureUsingPost, updatePictureUsingPost } from '@/api/pictureController.ts'
+import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
+import { USER_ROLE_ENUM } from '@/constants/user.ts'
 
 const props = defineProps<{
   pictureDetail?: API.PictureDetailVO
@@ -90,7 +92,11 @@ const pictureEditForm = reactive<API.PictureEditRequest>({
 const handlePictureEditSubmit = async () => {
   loadingBar.start()
   try {
-    await editPictureUsingPost({ ...pictureEditForm })
+    if (useLoginUserStore().userInfo.role === USER_ROLE_ENUM.ADMIN) {
+      await updatePictureUsingPost({ ...pictureEditForm })
+    } else {
+      await editPictureUsingPost({ ...pictureEditForm })
+    }
     message.success('修改成功')
   } finally {
     loadingBar.finish()

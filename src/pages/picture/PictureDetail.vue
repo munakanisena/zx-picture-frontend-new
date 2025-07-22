@@ -9,16 +9,18 @@
   >
     <!--图片展示-->
     <n-gi span="1 l:16">
-      <n-card embedded header-style="padding: 0">
+      <n-card embedded footer-style="padding: 0">
         <template #cover>
-          <n-image
-            style="max-height: 700px"
-            :src="pictureDetail?.compressUrl"
-            object-fit="contain"
-            alt="图片预览"
-          />
+          <div style="height: 600px">
+            <n-image
+              style="width: 100%; height: 100%"
+              :src="pictureDetail?.compressUrl"
+              object-fit="contain"
+              alt="图片预览"
+            />
+          </div>
         </template>
-        <template #header>
+        <template #footer>
           <n-button-group ro size="large" style="height: 50px; width: 100%; display: flex">
             <n-button @click="clickLike(pictureDetail)" style="flex: 1; height: 50px">
               <template #icon>

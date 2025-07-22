@@ -121,9 +121,10 @@ import {
 } from '@/constants/picture.ts'
 import { listHomeCategoriesUsingGet } from '@/api/homeController.ts'
 import {
+  deletePictureByAdminUsingPost,
   deletePictureByIdUsingPost,
   getPicturePageListAsManageUsingPost,
-  reviewPictureUsingPost,
+  reviewPictureUsingPost
 } from '@/api/pictureController.ts'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
@@ -213,7 +214,7 @@ function handlePageChange(page: number) {
 
 //删除图片
 const clickDelete = async (pictureId: number) => {
-  await deletePictureByIdUsingPost({ id: pictureId })
+  await deletePictureByAdminUsingPost({ id: pictureId })
   await fetchPictureList()
   message.success('删除成功')
 }

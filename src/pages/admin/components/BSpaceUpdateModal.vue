@@ -42,6 +42,7 @@ const formValue = ref<API.SpaceUpdateRequest>({})
 const userUpdate = async () => {
   try {
     loading.value = true
+    //todo 这里全传有问题
     await updateSpaceUsingPost({ ...formValue.value })
     message.success('空间信息更新成功')
     //刷新列表
@@ -51,7 +52,6 @@ const userUpdate = async () => {
     loading.value = false
   }
 }
-
 
 watch(
   () => props.currentSpace,

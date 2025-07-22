@@ -38,12 +38,14 @@
       </n-breadcrumb>
       <n-card embedded>
         <template #cover>
-          <n-image
-            style="max-height: 816px"
-            :src="pictureDetail.compressUrl"
-            object-fit="contain"
-            alt="图片预览"
-          />
+          <div style="height: 600px">
+            <n-image
+              style="width: 100%; height: 100%"
+              :src="pictureDetail?.compressUrl"
+              object-fit="contain"
+              alt="图片预览"
+            />
+          </div>
         </template>
         <template #action>
           <n-button
@@ -107,10 +109,21 @@ const loadingBar = useLoadingBar()
 const handleUploadCrop = async (file: File) => {
   loadingBar.start()
   if (spaceId.value) {
-    const { data } = await uploadPictureByFileToSpaceUsingPost({}, { spaceId: spaceId.value }, file)
+    const { data } = await uploadPictureByFileToSpaceUsingPost(
+      {},
+      {
+        spaceId: spaceId.value,
+        id: pictureDetail.value?.id,
+      },
+      file,
+    )
     pictureDetail.value = data as API.PictureDetailVO
   } else {
-    const { data } = await uploadPictureByFileToPublicUsingPost({}, {},file)
+    const { data } = await uploadPictureByFileToPublicUsingPost(
+      {},
+      { id: pictureDetail.value?.id },
+      file,
+    )
     pictureDetail.value = data as API.PictureDetailVO
   }
   loadingBar.finish()

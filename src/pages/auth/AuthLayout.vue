@@ -1,13 +1,8 @@
 <template>
   <n-layout>
     <div
-      style="
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        background: rgba(192, 192, 192, 70%) url(/src/image/banner.jpg);
-        background-blend-mode: hue;
-      "
+      :style="{ background: `rgba(192, 192, 192, 70%) url(${banner})` }"
+      style="position: fixed; width: 100%; height: 100%; background-blend-mode: hue"
     ></div>
 
     <div style="margin: 50px auto; width: min(400px, calc(100% - 16px))">
@@ -25,3 +20,6 @@
     </div>
   </n-layout>
 </template>
+<script setup lang="ts">
+import banner from '@/image/banner.jpg'
+</script>

@@ -7,7 +7,7 @@
           object-fit="contain"
           height="48"
           preview-disabled
-          src="/src/image/R.jpg"
+          :src="searchIcon"
         ></n-image>
         <n-input
           v-model:value="searchText"
@@ -34,6 +34,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
+import searchIcon from '@/image/search-icon.jpg'
 
 const emit = defineEmits(['search'])
 

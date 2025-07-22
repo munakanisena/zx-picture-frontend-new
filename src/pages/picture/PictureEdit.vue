@@ -15,23 +15,35 @@
     <!--图片展示-->
     <n-gi span="1 l:16" v-else>
       <n-breadcrumb style="margin-bottom: 8px">
-        <n-breadcrumb-item>
+        <n-breadcrumb-item
+          v-if="useLoginUserStore().userInfo.role === USER_ROLE_ENUM.ADMIN && !spaceId"
+        >
+          <router-link :to="{ name: 'picture-manager' }" style="color: #ff69b4">
+            返回图片管理页面
+          </router-link>
+        </n-breadcrumb-item>
+        <n-breadcrumb-item v-else>
           <router-link v-if="spaceType == 1" to="/space/person" style="color: #ff69b4"
             >{{ spaceName }}(点击返回个人空间)
           </router-link>
-          <router-link v-else to="/space/team" style="color: #ff69b4"
+          <router-link
+            v-else
+            :to="{ name: 'space-team', query: { space_id: spaceId || '' } }"
+            style="color: #ff69b4"
             >{{ spaceName }}(点击返回团队空间)
           </router-link>
         </n-breadcrumb-item>
       </n-breadcrumb>
       <n-card embedded>
         <template #cover>
-          <n-image
-            style="max-height: 816px"
-            :src="pictureDetail.compressUrl"
-            object-fit="contain"
-            alt="图片预览"
-          />
+          <div style="height: 600px">
+            <n-image
+              style="width: 100%; height: 100%"
+              :src="pictureDetail?.compressUrl"
+              object-fit="contain"
+              alt="图片预览"
+            />
+          </div>
         </template>
         <template #action>
           <n-button
@@ -92,6 +104,8 @@ import {
   uploadPictureByFileToSpaceUsingPost,
 } from '@/api/pictureController.ts'
 import { useRouter } from 'vue-router'
+import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
+import { USER_ROLE_ENUM } from '@/constants/user.ts'
 
 const { pictureId, spaceId, spaceName, spaceType } = defineProps<{
   pictureId: string
@@ -109,10 +123,21 @@ const loadingBar = useLoadingBar()
 const handleUploadCrop = async (file: File) => {
   loadingBar.start()
   if (spaceId) {
-    const { data } = await uploadPictureByFileToSpaceUsingPost({}, { spaceId: spaceId }, file)
+    const { data } = await uploadPictureByFileToSpaceUsingPost(
+      {},
+      {
+        id: pictureDetail.value?.id,
+        spaceId: spaceId,
+      },
+      file,
+    )
     pictureDetail.value = data as API.PictureDetailVO
   } else {
-    const { data } = await uploadPictureByFileToPublicUsingPost({}, {}, file)
+    const { data } = await uploadPictureByFileToPublicUsingPost(
+      {},
+      { id: pictureDetail.value?.id },
+      file,
+    )
     pictureDetail.value = data as API.PictureDetailVO
   }
   loadingBar.finish()

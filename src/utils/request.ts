@@ -4,10 +4,10 @@ import { createDiscreteApi } from 'naive-ui'
 
 const { message } = createDiscreteApi(['message'])
 
-// axios.defaults.baseURL = import.meta.env.VITE_APP_BASE_API_URL
-axios.defaults.baseURL = ''
+axios.defaults.baseURL = import.meta.env.VITE_APP_BASE_API_URL
+// axios.defaults.baseURL = ''
 //上传图片可能花费时间过长。设置长一点的响应时间
-axios.defaults.timeout = 20000
+axios.defaults.timeout = 30000
 axios.defaults.withCredentials = true
 axios.defaults.headers['X-Requested-With'] = 'XMLHttpRequest'
 
