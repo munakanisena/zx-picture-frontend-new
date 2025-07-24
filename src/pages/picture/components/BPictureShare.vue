@@ -7,9 +7,10 @@
     size="huge"
     :bordered="false"
   >
-    <template #header-extra>
-      <n-a :href="props.link">{{props.link}}</n-a>
-    </template>
+    <div style="margin-left: 12px">
+      分享链接:
+      <n-a :href="props.link">{{ props.link }}</n-a>
+    </div>
     <n-qr-code :value="props.link" />
   </n-modal>
 </template>

@@ -92,34 +92,40 @@
           <div style="height: calc(100vh - 300px); overflow-y: auto">
             <n-spin :show="spinning" style="width: 100%; height: 100%">
               <template #description> 请稍候...</template>
-              <n-grid x-gap="16" y-gap="16" cols="1 l:3" responsive="screen">
+              <n-grid x-gap="16" y-gap="16" cols="1 s:2 m:2 l:3" responsive="screen">
                 <n-gi v-for="(pictureResult, index) in capturePictureList" :key="index">
                   <n-card
                     :title="pictureResult.pictureName"
                     hoverable
                     embedded
-                    style="width: 100%; height: 450px; text-align: center"
+                    style="text-align: center"
                     content-style=" padding:0 "
                   >
                     <template #cover>
-                      <n-image :src="pictureResult.handleCaptureUrl" object-fit="contain">
-                        <template #error>
-                          <div
-                            style="
-                              height: 200px;
-                              display: flex;
-                              align-items: center;
-                              justify-content: center;
-                              background-color: #f0f0f0;
-                            "
-                          >
-                            <n-icon size="48" color="#999">
-                              <BugOutline />
-                            </n-icon>
-                            <n-text style="margin-left: 10px">图片加载失败或无法展示</n-text>
-                          </div>
-                        </template>
-                      </n-image>
+                      <div style="height: 350px">
+                        <n-image
+                          style="width: 100%; height: 100%"
+                          :src="pictureResult.handleCaptureUrl"
+                          object-fit="contain"
+                        >
+                          <template #error>
+                            <div
+                              style="
+                                height: 200px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                background-color: #f0f0f0;
+                              "
+                            >
+                              <n-icon size="48" color="#999">
+                                <BugOutline />
+                              </n-icon>
+                              <n-text style="margin-left: 10px">图片加载失败或无法展示</n-text>
+                            </div>
+                          </template>
+                        </n-image>
+                      </div>
                     </template>
                     <template #action>
                       <n-flex justify="space-around">
@@ -141,7 +147,7 @@
                           <n-icon>
                             <ShareSocialOutline />
                           </n-icon>
-                          图片来源
+                          下载图片
                         </n-button>
                       </n-flex>
                     </template>
@@ -261,8 +267,8 @@ const uploadPicture = async (picture: API.CapturePictureResult) => {
 const openPicture = (picture: API.CapturePictureResult) => {
   const link = document.createElement('a')
   link.href = picture.captureUrl as string
+  //新开页面
   link.target = '_blank'
-  link.download = picture.pictureName || `download_${Date.now()}.jpg`
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)

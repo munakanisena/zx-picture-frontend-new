@@ -7,7 +7,7 @@
   </n-card>
 </template>
 <script setup lang="ts">
-defineProps<{
+const { pictureDetail } = defineProps<{
   pictureDetail?: API.PictureDetailVO
 }>()
 </script>

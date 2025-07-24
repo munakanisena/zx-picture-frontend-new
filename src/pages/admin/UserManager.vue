@@ -194,7 +194,7 @@ const columns: DataTableColumns<API.UserVO> = [
     key: 'avatar',
     render(row) {
       return h(NImage, {
-        src: row.avatar,
+        src: row.avatar ?? 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg',
         width: 64,
         height: 64,
         style: {

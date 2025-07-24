@@ -88,6 +88,7 @@ import {
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { PIC_INTERACTION_STATUS_ENUM, PIC_INTERACTION_TYPE_ENUM } from '@/constants/picture.ts'
 import BPictureShare from '@/pages/picture/components/BPictureShare.vue'
+import { downloadImage } from '@/utils/util.ts'
 
 const shareLink = ref<string>()
 const pictureDetail = ref<API.PictureDetailVO>()
@@ -95,6 +96,7 @@ const { pictureId } = defineProps<{ pictureId: string }>()
 const message = useMessage()
 const loading = ref<boolean>(false)
 const pictureShareRef = useTemplateRef('pictureShareRef')
+const loginStore = useLoginUserStore()
 
 const fetchPictureDetail = async () => {
   const { data } = await getPictureDetailByIdUsingGet({ pictureId: pictureId })
@@ -112,7 +114,7 @@ const actioLCollect = ref(true)
 //点赞
 const clickLike = async (pictureHomeVO: API.PictureHomeVO) => {
   //这里需要判断是否登录了。未登录跳转
-  const isLogin = useLoginUserStore().checkLogin()
+  const isLogin = loginStore.checkLogin()
   //这里要终止当前函数
   if (!isLogin) {
     return
@@ -147,7 +149,7 @@ const clickLike = async (pictureHomeVO: API.PictureHomeVO) => {
 //收藏
 const clickCollect = async (pictureHomeVO: API.PictureHomeVO) => {
   //这里需要判断是否登录了。未登录跳转
-  const isLogin = useLoginUserStore().checkLogin()
+  const isLogin = loginStore.checkLogin()
   //这里要终止当前函数
   if (!isLogin) {
     return
@@ -183,7 +185,7 @@ const clickCollect = async (pictureHomeVO: API.PictureHomeVO) => {
 //下载原图片
 const clickDownload = async () => {
   //这里需要判断是否登录了。未登录跳转
-  const isLogin = useLoginUserStore().checkLogin()
+  const isLogin = loginStore.checkLogin()
   //这里要终止当前函数
   if (!isLogin) {
     return
@@ -191,13 +193,14 @@ const clickDownload = async () => {
 
   loading.value = true
   const { data } = await pictureDownloadUsingPost({ id: pictureDetail.value?.id })
-
   const link = document.createElement('a')
   link.href = data
+  link.rel = 'noopener noreferrer';
   link.download = pictureDetail.value?.picName || 'download.jpg'
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
+  // downloadImage(data, pictureDetail.value?.picName ?? 'download')
   loading.value = false
 }
 

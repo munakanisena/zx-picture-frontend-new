@@ -19,11 +19,15 @@
       <n-gi span="1 l:6">
         <!--以图搜图原图片展示区-->
         <n-flex vertical>
-          <n-card
-            style="height: 250px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); border-radius: 8px"
-          >
+          <n-card style="box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); border-radius: 8px">
             <template #cover>
-              <n-image :src="pictureUrl" object-fit="contain"></n-image>
+              <div style="height: 250px">
+                <n-image
+                  style="width: 100%; height: 100%"
+                  :src="pictureUrl"
+                  object-fit="contain"
+                ></n-image>
+              </div>
             </template>
           </n-card>
           <!--检索配置栏-->
@@ -90,33 +94,34 @@
           <div style="height: calc(100vh - 300px); overflow-y: auto">
             <n-spin :show="spinning" style="width: 100%; height: 100%">
               <template #description> 请稍候...</template>
-              <n-grid x-gap="16" y-gap="16" cols="1 l:3" responsive="screen">
+              <n-grid x-gap="16" y-gap="16" cols="1 s:2 m:2 l:3" responsive="screen">
                 <n-gi v-for="(pictureResult, index) in searchPictureList" :key="index">
-                  <n-card
-                    hoverable
-                    embedded
-                    style="width: 100%; height: 300px; text-align: center"
-                    content-style=" padding:0 "
-                  >
+                  <n-card hoverable embedded style="text-align: center" content-style=" padding:0 ">
                     <template #cover>
-                      <n-image :src="pictureResult.thumbUrl" object-fit="contain">
-                        <template #error>
-                          <div
-                            style="
-                              height: 200px;
-                              display: flex;
-                              align-items: center;
-                              justify-content: center;
-                              background-color: #f0f0f0;
-                            "
-                          >
-                            <n-icon size="48" color="#999">
-                              <BugOutline />
-                            </n-icon>
-                            <n-text style="margin-left: 10px">图片加载失败或无法展示</n-text>
-                          </div>
-                        </template>
-                      </n-image>
+                      <div style="height: 350px">
+                        <n-image
+                          style="height: 100%; width: 100%"
+                          :src="pictureResult.thumbUrl"
+                          object-fit="cover"
+                        >
+                          <template #error>
+                            <div
+                              style="
+                                height: 200px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                background-color: #f0f0f0;
+                              "
+                            >
+                              <n-icon size="48" color="#999">
+                                <BugOutline />
+                              </n-icon>
+                              <n-text style="margin-left: 10px">图片加载失败或无法展示</n-text>
+                            </div>
+                          </template>
+                        </n-image>
+                      </div>
                     </template>
                     <template #action>
                       <n-flex justify="space-around">
@@ -245,7 +250,6 @@ const openPicture = (picture: API.SearchPictureResult) => {
   const link = document.createElement('a')
   link.href = picture.fromUrl as string
   link.target = '_blank'
-  link.download = `download_${Date.now()}.jpg`
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)

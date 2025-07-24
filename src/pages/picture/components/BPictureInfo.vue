@@ -20,7 +20,7 @@
             :style="{
               backgroundColor: toHexColor(pictureDetail?.originColor as string),
               width: '64px',
-              height: '20px'
+              height: '20px',
             }"
           />
           【{{ toHexColor(pictureDetail?.originColor as string) }}】
@@ -38,7 +38,7 @@
         <span v-else>无</span>
       </n-descriptions-item>
       <n-descriptions-item label="原图大小">
-        {{ ((pictureDetail?.originSize as number) / 1024).toFixed(2) }} KB
+        {{ formatSize(pictureDetail?.originSize as number) }}
       </n-descriptions-item>
       <n-descriptions-item label="原图格式">
         <n-tag type="success">{{ pictureDetail?.originFormat }}</n-tag>
@@ -54,9 +54,9 @@
 </template>
 
 <script setup lang="ts">
-import { toHexColor } from '@/utils/util.ts'
+import { formatSize, toHexColor } from '@/utils/util.ts'
 
-const props = defineProps<{
+const { showMore, pictureDetail } = defineProps<{
   pictureDetail?: API.PictureDetailVO
   showMore?: boolean
 }>()

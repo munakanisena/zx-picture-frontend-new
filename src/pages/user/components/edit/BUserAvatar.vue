@@ -12,12 +12,8 @@
           :custom-request="sendFile"
           :on-before-upload="checkUploadImage"
         >
-          <n-avatar
-            round
-            :size="64"
-            :src="userInfo.avatar ?? 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'"
-          >
-          </n-avatar>
+          <n-avatar v-if="userInfo.avatar" round :size="64" :src="userInfo.avatar"> </n-avatar>
+          <n-icon :size="64" v-else :component="PersonCircleOutline"></n-icon>
         </n-upload>
       </n-flex>
     </n-flex>
@@ -33,6 +29,7 @@ import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import type { UploadCustomRequestOptions } from 'naive-ui'
 import { uploadAvatarUsingPost } from '@/api/userController.ts'
 import { checkUploadImage } from '@/utils/util.ts'
+import { PersonCircleOutline } from '@vicons/ionicons5'
 
 const message = useMessage()
 const cropperRef = useTemplateRef('picture-cropper')

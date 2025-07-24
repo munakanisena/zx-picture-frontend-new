@@ -1,6 +1,7 @@
 import { useBreakpoints as useBreakpointsInner } from '@vueuse/core'
 import type { UploadCustomRequestOptions } from 'naive-ui'
 import { createDiscreteApi } from 'naive-ui'
+import { saveAs } from 'file-saver'
 
 const { message } = createDiscreteApi(['message'])
 /**
@@ -94,4 +95,16 @@ export const checkUploadImage = (options: UploadCustomRequestOptions) => {
     message.error('上传的图片大小不能超过50M')
     return isLt5M
   }
+}
+
+/**
+ * 下载图片
+ * @param url 图片下载地址
+ * @param fileName 要保存为的文件名
+ */
+export function downloadImage(url?: string, fileName?: string) {
+  if (!url) {
+    return
+  }
+  saveAs(url, fileName)
 }
