@@ -6,47 +6,59 @@
     :rules="rules"
     :show-require-mark="false"
     size="medium"
+    :show-label="false"
     style="max-width: 400px"
   >
-    <n-form-item path="name" label="用户名">
-      <n-input v-model:value="formValue.name" placeholder="请输入用户名" />
+    <n-form-item path="name">
+      <n-input class="input-tall" v-model:value="formValue.name" placeholder="用户名" />
     </n-form-item>
-    <n-form-item path="email" label="邮箱">
-      <n-input v-model:value="formValue.email" placeholder="请输入邮箱" />
+    <n-form-item path="email">
+      <n-input class="input-tall" v-model:value="formValue.email" placeholder="邮箱" />
     </n-form-item>
     <n-text depth="3">*收不到验证邮件的话，记得看垃圾箱。</n-text>
-    <n-form-item path="captcha" label="邮箱验证码">
-      <n-input v-model:value="formValue.captcha" placeholder="请输入邮箱验证码" />
-      <n-button
-        style="width: 120px; margin-left: 10px"
-        :disabled="disabled"
-        @click="sendCaptcha"
-        type="primary"
-        ghost
-        attr-type="button"
-      >
-        {{ buttonText }}
-      </n-button>
+    <n-form-item path="captcha">
+      <n-flex :wrap="false" style="width: 100%">
+        <n-input class="input-tall" v-model:value="formValue.captcha" placeholder="验证码" />
+        <n-button
+          style="height: 48px; font-size: 16px"
+          :disabled="disabled"
+          @click="sendCaptcha"
+          type="primary"
+          ghost
+          attr-type="button"
+        >
+          {{ buttonText }}
+        </n-button>
+      </n-flex>
     </n-form-item>
-    <n-form-item path="password" label="密码">
+    <n-form-item path="password">
       <n-input
+        class="input-tall"
         v-model:value="formValue.password"
         show-password-on="click"
         type="password"
-        placeholder="请输入密码"
+        placeholder="密码"
       />
     </n-form-item>
-    <n-form-item path="confirmPassword" label="重复密码">
+    <n-form-item path="confirmPassword">
       <n-input
+        class="input-tall"
         @keydown.enter="register()"
         v-model:value="formValue.confirmPassword"
         show-password-on="click"
         type="password"
-        placeholder="请重复输入密码"
+        placeholder="重复密码"
       />
     </n-form-item>
-    <div style="margin-bottom: 5px">
-      <n-button attr-type="submit" type="primary" block secondary strong @click="register">
+    <div>
+      <n-button
+        style="height: 48px; font-size: 18px"
+        attr-type="submit"
+        type="primary"
+        block
+        strong
+        @click="register"
+      >
         注册
       </n-button>
     </div>
@@ -180,4 +192,9 @@ const register = async () => {
   window.location.href = route.fullPath
 }
 </script>
-<style scoped></style>
+<style scoped>
+.input-tall {
+  height: 48px;
+  line-height: 48px;
+}
+</style>

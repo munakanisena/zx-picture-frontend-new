@@ -15,7 +15,7 @@
           <n-icon size="24" :component="MenuIcon" />
         </n-button>
         <div v-else style="padding: 0 16px; margin-left: 10px; max-width: 200px">
-          <img alt="logo" src="/src/image/logo.png" />
+          <n-image preview-disabled alt="logo" :src="logo" height="64px" />
         </div>
 
         <div style="flex: 1"></div>
@@ -100,6 +100,7 @@
 </template>
 <script lang="ts" setup>
 import type { Component } from 'vue'
+import logo from "@/image/logo.png"
 import { computed, h, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'

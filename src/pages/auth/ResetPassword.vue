@@ -1,46 +1,82 @@
 <template>
   <n-card>
-    <n-form ref="formRef" :model="formValue" :rules="rules" :show-require-mark="false" size="large">
-      <n-form-item path="email" label="邮箱">
-        <n-input style="width: 100%" v-model:value="formValue.email" placeholder="请输入邮箱" />
+    <n-image
+      :src="logo"
+      object-fit="cover"
+      width="192px"
+      preview-disabled
+      style="display: flex; justify-content: center"
+    />
+    <div
+      style="
+        font-weight: bold;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 12px;
+      "
+    >
+      重置密码
+    </div>
+    <n-form
+      ref="formRef"
+      :model="formValue"
+      :rules="rules"
+      :show-label="false"
+      :show-require-mark="false"
+      size="large"
+    >
+      <n-form-item path="email">
+        <n-input class="input-tall" v-model:value="formValue.email" placeholder="请输入邮箱" />
       </n-form-item>
       <n-text depth="3">*收不到验证邮件的话，记得看垃圾箱。</n-text>
-      <n-form-item path="captcha" label="邮箱验证码">
-        <n-input
-          style="width: 100%"
-          v-model:value="formValue.captcha"
-          placeholder="请输入邮箱验证码"
-        />
-        <n-button
-          style="width: 120px; margin-left: 10px"
-          :disabled="disabled"
-          @click="sendRestCaptcha"
-          type="primary"
-          ghost
-          attr-type="button"
-        >
-          {{ buttonText }}
-        </n-button>
+      <n-form-item path="captcha">
+        <n-flex :wrap="false" style="width: 100%">
+          <n-input
+            class="input-tall"
+            v-model:value="formValue.captcha"
+            placeholder="请输入邮箱验证码"
+          />
+          <n-button
+            style="height: 48px; font-size: 16px"
+            :disabled="disabled"
+            @click="sendRestCaptcha"
+            type="primary"
+            ghost
+            attr-type="button"
+          >
+            {{ buttonText }}
+          </n-button>
+        </n-flex>
       </n-form-item>
-      <n-form-item path="newPassword" label="密码">
+      <n-form-item path="newPassword">
         <n-input
+          class="input-tall"
           v-model:value="formValue.newPassword"
           show-password-on="click"
           type="password"
           placeholder="请输入密码"
         />
       </n-form-item>
-      <n-form-item path="confirmPassword" label="重复密码">
+      <n-form-item path="confirmPassword">
         <n-input
+          class="input-tall"
           v-model:value="formValue.confirmPassword"
           show-password-on="click"
           type="password"
           placeholder="请重复输入密码"
         />
       </n-form-item>
-      <div style="margin-bottom: 5px; margin-top: 5px">
-        <n-button attr-type="submit" type="primary" block secondary strong @click="restPassword">
-          注册
+      <div>
+        <n-button
+          style="height: 48px; font-size: 18px"
+          attr-type="submit"
+          type="primary"
+          block
+          strong
+          @click="restPassword"
+        >
+          重置密码
         </n-button>
       </div>
     </n-form>
@@ -49,6 +85,8 @@
 <script lang="ts" setup>
 import type { FormInst, FormItemRule } from 'naive-ui'
 import { computed, onUnmounted, ref } from 'vue'
+import logo from '@/image/logo.png'
+
 import { forgotPasswordUsingPost, restPasswordUsingPost } from '@/api/userController.ts'
 
 const message = useMessage()
@@ -163,4 +201,9 @@ const restPassword = async () => {
   loadingBar.finish()
 }
 </script>
-<style scoped></style>
+<style scoped>
+.input-tall {
+  height: 48px;
+  line-height: 48px;
+}
+</style>

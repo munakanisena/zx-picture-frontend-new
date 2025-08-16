@@ -102,9 +102,20 @@ export const checkUploadImage = (options: UploadCustomRequestOptions) => {
  * @param url 图片下载地址
  * @param fileName 要保存为的文件名
  */
-export function downloadImage(url?: string, fileName?: string) {
+export async function downloadImage(url?: string, fileName?: string) {
   if (!url) {
     return
   }
-  saveAs(url, fileName)
+  try {
+    const response = await fetch(url)
+    if (!response.ok) {
+      message.error('下载失败')
+      return
+    }
+    //这里转换为异步 要等待
+    saveAs(await response.blob(), fileName)
+  } catch (e) {
+    message.error('下载失败')
+    console.log('下载失败', e)
+  }
 }

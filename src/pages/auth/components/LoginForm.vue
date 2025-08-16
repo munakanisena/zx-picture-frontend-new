@@ -1,35 +1,44 @@
 <template>
   <n-form
     ref="formRef"
-    label-width="auto"
     :model="formValue"
     :rules="rules"
     :show-require-mark="false"
+    :show-label="false"
     size="large"
   >
-    <n-form-item-row path="emailOrUsername" label="账号">
+    <n-form-item path="emailOrUsername">
       <n-input
-        style="width: 100%"
+        class="input-tall"
         v-model:value="formValue.emailOrUsername"
-        placeholder="请输入账户名/邮箱"
+        placeholder="账户名或邮箱"
       />
-    </n-form-item-row>
-    <n-form-item-row path="password" label="密码">
+    </n-form-item>
+    <n-form-item path="password">
       <n-input
+        class="input-tall"
         @keydown.enter="login()"
         v-model:value="formValue.password"
         show-password-on="click"
         type="password"
-        placeholder="请输入密码"
+        placeholder="密码"
       />
-    </n-form-item-row>
+    </n-form-item>
   </n-form>
   <router-link :to="{ name: 'rest-password' }" style="text-decoration: none">
-    <n-a>忘记密码</n-a>
+    <n-a style="font-weight: bolder; display: flex; justify-content: end">忘记密码</n-a>
   </router-link>
-  <div style="margin-bottom: 5px; margin-top: 5px">
-    <n-button type="primary" block secondary strong @click="login"> 登录</n-button>
-  </div>
+  <div style="height: 8px"></div>
+  <n-button
+    style="height: 48px; font-size: 18px"
+    attr-type="submit"
+    type="primary"
+    block
+    strong
+    @click="login"
+  >
+    登录
+  </n-button>
 </template>
 <script lang="ts" setup>
 import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
@@ -38,11 +47,8 @@ import { loginUsingPost } from '@/api/userController.ts'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 
 const message = useMessage()
-//加载进度条
 const loadingBar = useLoadingBar()
-
 const formRef = ref<FormInst | null>(null)
-
 const formValue = ref<API.UserLoginRequest>({
   emailOrUsername: '',
   password: '',
@@ -80,4 +86,9 @@ const login = async () => {
   loadingBar.finish()
 }
 </script>
-<style scoped></style>
+<style scoped>
+.input-tall {
+  height: 48px;
+  line-height: 48px;
+}
+</style>

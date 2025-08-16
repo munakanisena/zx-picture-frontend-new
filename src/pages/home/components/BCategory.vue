@@ -1,13 +1,13 @@
 <template>
   <n-tabs
     v-model:value="selectedCategoryId"
-    default-value=""
+    default-value="all"
     justify-content="space-evenly"
     type="line"
     @update:value="doHomeSearch"
     size="large"
   >
-    <n-tab name="" tab="全部图片" />
+    <n-tab name="all" tab="全部图片" />
     <n-tab v-for="category in categoryList" :name="category.id" :tab="category.name" />
   </n-tabs>
 </template>

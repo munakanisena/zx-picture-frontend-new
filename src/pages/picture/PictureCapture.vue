@@ -147,7 +147,7 @@
                           <n-icon>
                             <ShareSocialOutline />
                           </n-icon>
-                          下载图片
+                          图片来源
                         </n-button>
                       </n-flex>
                     </template>

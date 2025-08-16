@@ -190,17 +190,18 @@ const clickDownload = async () => {
   if (!isLogin) {
     return
   }
-
   loading.value = true
   const { data } = await pictureDownloadUsingPost({ id: pictureDetail.value?.id })
-  const link = document.createElement('a')
-  link.href = data
-  link.rel = 'noopener noreferrer';
-  link.download = pictureDetail.value?.picName || 'download.jpg'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  // downloadImage(data, pictureDetail.value?.picName ?? 'download')
+
+  //这里需要做处理。因为图片是跨域的所以触发不了下载
+  // const link = document.createElement('a')
+  // link.href = data
+  // link.download = pictureDetail.value?.picName || 'download.jpg'
+  // document.body.appendChild(link)
+  // link.click()
+  // document.body.removeChild(link)
+  await downloadImage(data, pictureDetail.value?.picName ?? 'download')
+
   loading.value = false
 }
 

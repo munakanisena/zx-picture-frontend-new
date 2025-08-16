@@ -1,22 +1,18 @@
 <template>
-  <n-card content-style="padding: 0;">
-    <n-tabs
-      type="line"
-      size="large"
-      :tabs-padding="20"
-      pane-style="padding: 0px;"
-      animated
-      style="width: 100%"
-    >
-      <n-tab-pane name="登录">
-        <div style="padding: 16px">
+  <n-card>
+    <n-image
+      :src="logo"
+      object-fit="cover"
+      width="192px"
+      preview-disabled
+      style="display: flex; justify-content: center"
+    />
+    <n-tabs default-value="login" justify-content="space-evenly" type="line" size="large" animated>
+      <n-tab-pane name="login" tab="登录">
           <login-form />
-        </div>
       </n-tab-pane>
-      <n-tab-pane name="注册">
-        <div style="padding: 16px">
+      <n-tab-pane name="register" tab="注册">
           <register-form />
-        </div>
       </n-tab-pane>
     </n-tabs>
   </n-card>
@@ -27,6 +23,8 @@ import LoginForm from '@/pages/auth/components/LoginForm.vue'
 import RegisterForm from '@/pages/auth/components/RegisterForm.vue'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { watch } from 'vue'
+import logo from '@/image/logo.png'
+
 const { from } = defineProps<{ from?: string }>()
 const router = useRouter()
 const userStore = useLoginUserStore()
